@@ -17,6 +17,7 @@
 #include "base/output.h"
 #include "parser/commands.h"
 #include "util/floatingpoint_size.h"
+#include "util/int_roundingmode.h"
 
 namespace cvc5 {
 namespace parser {
