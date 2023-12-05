@@ -54,6 +54,8 @@ libcvc5_add_sources(
   poly_util.h
   random.cpp
   random.h
+  real_floatingpoint.cpp
+  real_floatingpoint.h
   resource_manager.cpp
   resource_manager.h
   result.cpp

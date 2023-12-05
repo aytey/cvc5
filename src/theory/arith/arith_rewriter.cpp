@@ -39,6 +39,8 @@
 #include "util/divisible.h"
 #include "util/iand.h"
 #include "util/real_algebraic_number.h"
+#include "util/rfp_round.h"
+#include "util/real_floatingpoint.h"
 
 using namespace cvc5::internal::kind;
 
