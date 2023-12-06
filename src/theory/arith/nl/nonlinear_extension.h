@@ -33,6 +33,8 @@
 #include "theory/arith/nl/nl_model.h"
 #include "theory/arith/nl/piand_solver.h"
 #include "theory/arith/nl/pow2_solver.h"
+#include "theory/arith/nl/rfp_round_solver.h"
+#include "theory/arith/nl/rfp_add_solver.h"
 #include "theory/arith/nl/stats.h"
 #include "theory/arith/nl/strategy.h"
 #include "theory/arith/nl/transcendental/transcendental_solver.h"
@@ -275,7 +277,11 @@ class NonlinearExtension : EnvObj
    * This is the subsolver responsible for running the procedure for
    * constraints involving real-valued FP rounding operators.
    */
-  Pow2Solver d_rfpRoundSlv;
+  RfpRoundSolver d_rfpRoundSlv;
+
+  /** The rfp.add solver
+   */
+  RfpAddSolver d_rfpAddSlv;
 
   /** The strategy for the nonlinear extension. */
   Strategy d_strategy;

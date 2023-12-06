@@ -620,6 +620,10 @@ enum ENUM(Kind)
    */
   EVALUE(LOG2),
   /**
+   * Real version of fp.add.
+   */
+  EVALUE(RFP_ADD),
+  /**
    * Arithmetic subtraction, left associative.
    *
    * - Arity: ``n > 1``

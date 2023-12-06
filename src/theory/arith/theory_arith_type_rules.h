@@ -159,10 +159,24 @@ class PowTypeRule
 //};
 
 /**
- * Type rule for the RfpRound operator.
+ * Type rule for the RFP unary operators.
  * Always returns realType.
  */
-class RfpRoundTypeRule
+class RfpUnOpTypeRule
+{
+ public:
+  static TypeNode preComputeType(NodeManager* nm, TNode n);
+  static TypeNode computeType(NodeManager* nodeManager,
+                              TNode n,
+                              bool check,
+                              std::ostream* errOut);
+};
+
+/**
+ * Type rule for the RFP binary operators.
+ * Always returns realType.
+ */
+class RfpBinOpTypeRule
 {
  public:
   static TypeNode preComputeType(NodeManager* nm, TNode n);

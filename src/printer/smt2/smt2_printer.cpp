@@ -54,6 +54,7 @@
 #include "util/indexed_root_predicate.h"
 #include "util/real_algebraic_number.h"
 #include "util/regexp.h"
+#include "util/rfp_add.h"
 #include "util/rfp_round.h"
 #include "util/smt2_quote_string.h"
 #include "util/string.h"
