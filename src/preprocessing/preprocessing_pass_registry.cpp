@@ -34,6 +34,7 @@
 #include "preprocessing/passes/ff_bitsum.h"
 #include "preprocessing/passes/ff_disjunctive_bit.h"
 #include "preprocessing/passes/foreign_theory_rewrite.h"
+#include "preprocessing/passes/fp_to_real.h"
 #include "preprocessing/passes/fun_def_fmf.h"
 #include "preprocessing/passes/global_negate.h"
 #include "preprocessing/passes/ho_elim.h"
