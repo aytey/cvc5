@@ -302,6 +302,18 @@ class CardinalityComputer
   static Cardinality computeCardinality(TypeNode type);
 };
 
+/** Type rule for rfp.to_fp conversion. 
+ */
+class RfpToFPTypeRule
+{
+ public:
+  static TypeNode preComputeType(NodeManager* nm, TNode n);
+  static TypeNode computeType(NodeManager* nodeManager,
+                              TNode n,
+                              bool check,
+                              std::ostream* errOut);
+};
+
 }  // namespace fp
 }  // namespace theory
 }  // namespace cvc5::internal
