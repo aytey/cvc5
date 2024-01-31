@@ -640,6 +640,26 @@ enum ENUM(Kind)
    */
   EVALUE(RFP_DIV),
   /**
+   * Real version of fp.eq.
+   */
+  EVALUE(RFP_EQ),
+  /**
+   * Real version of fp.lt.
+   */
+  EVALUE(RFP_LT),
+  /**
+   * Real version of fp.le.
+   */
+  EVALUE(RFP_LE),
+  /**
+   * Real version of fp.gt.
+   */
+  EVALUE(RFP_GT),
+  /**
+   * Real version of fp.ge.
+   */
+  EVALUE(RFP_GE),
+  /**
    * Arithmetic subtraction, left associative.
    *
    * - Arity: ``n > 1``
