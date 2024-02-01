@@ -648,17 +648,17 @@ enum ENUM(Kind)
    */
   EVALUE(RFP_LT),
   /**
-   * Real version of fp.le.
+   * Real version of fp.leq.
    */
-  EVALUE(RFP_LE),
+  EVALUE(RFP_LEQ),
   /**
    * Real version of fp.gt.
    */
   EVALUE(RFP_GT),
   /**
-   * Real version of fp.ge.
+   * Real version of fp.geq.
    */
-  EVALUE(RFP_GE),
+  EVALUE(RFP_GEQ),
   /**
    * Arithmetic subtraction, left associative.
    *
