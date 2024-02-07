@@ -634,7 +634,7 @@ enum ENUM(Kind)
   /**
    * Real version of fp.mul.
    */
-  EVALUE(RFP_MUL),
+  EVALUE(RFP_MULT),
   /**
    * Real version of fp.div.
    */

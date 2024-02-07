@@ -38,6 +38,8 @@
 #include "theory/fp/theory_fp_utils.h"
 #include "util/floatingpoint.h"
 
+#include "util/real_floatingpoint.h"
+
 using namespace cvc5::internal::kind;
 
 namespace cvc5::internal {
