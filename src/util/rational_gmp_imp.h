@@ -314,6 +314,9 @@ class Rational
   /** Power of radix 2 rounded downward. */
   Rational pow2Lower() const;
 
+  /** Logarithm with base 2 rounded downward. */
+  size_t ilog2Lower() const;
+
  private:
   /**
    * Stores the value of the rational is stored in a C++ GMP rational class.
