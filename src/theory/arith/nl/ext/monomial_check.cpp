@@ -471,6 +471,22 @@ MonomialSign MonomialCheck::compareSign(Node oa,
         proof->addStep(lemma, ProofRule::SCOPE, {conc}, {prem});
       }
       d_data->d_im.addPendingLemma(lemma, InferenceId::ARITH_NL_SIGN, proof);
+
+      //// for rfp
+      //std::map<Node, Node>::const_iterator it = d_data->d_ms_rounds.find(a);
+      //if (it != d_data->d_ms_rounds.end())
+      //{
+      //  Node premR = prem;
+      //  Node oaRnd = it->second;
+      //  FloatingPointSize sz = oaRnd.getOperator().getConst<RfpRound>().getSize();
+      //  uint32_t eb = sz.exponentWidth();
+      //  uint32_t sb = sz.significandWidth();
+      //  Node concR = mkIsZero(eb,sb, oaRnd);
+      //  Node lem = premR.impNode(concR);
+      //  Trace("rfp-mult-comp-lemma") << "RfpMonomialCheck::Lemma: " << lem
+      //                               << std::endl;
+      //  d_data->d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_MULT_COMP);
+      //}
     }
     return MonomialSign::ZERO;
   }
@@ -991,8 +1007,9 @@ void MonomialCheck::checkCompRounds(Node lit, Node a, Node b,
         b = nm->mkNode(Kind::TO_REAL, b);
       }
       Node bRnd = nm->mkNode(Kind::RFP_ROUND, op, aRnd[0], b);
-      Node a1 = mkIsFinite(eb,sb, aRnd);
-      Node a2 = mkIsFinite(eb,sb, bRnd);
+      //Node a1 = mkIsFinite(eb,sb, aRnd);
+      Node a1 = mkIsNan(eb,sb, aRnd).notNode();
+      Node a2 = mkIsNan(eb,sb, bRnd).notNode();
 
       if (status == 1)
       {

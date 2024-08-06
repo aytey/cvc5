@@ -610,20 +610,20 @@ void NonlinearExtension::runStrategy(const std::vector<Node>& assertions,
       case InferStep::RFP_ROUND_INIT:
         d_rfpRoundSlv.initLastCall(assertions, false_asserts, xts);
         break;
-      case InferStep::RFP_ROUND_FULL: 
-        d_rfpRoundSlv.checkFullRefine(); 
-        break;
       case InferStep::RFP_ROUND_INITIAL:
         d_rfpRoundSlv.checkInitialRefine();
+        break;
+      case InferStep::RFP_ROUND_FULL: 
+        d_rfpRoundSlv.checkFullRefine(); 
         break;
       case InferStep::RFP_INIT:
         d_rfpSlv.initLastCall(assertions, false_asserts, xts);
         break;
-      case InferStep::RFP_FULL: 
-        d_rfpSlv.checkFullRefine(); 
-        break;
       case InferStep::RFP_INITIAL:
         d_rfpSlv.checkInitialRefine();
+        break;
+      case InferStep::RFP_FULL: 
+        d_rfpSlv.checkFullRefine(); 
         break;
       case InferStep::ICP:
         d_icpSlv.reset(assertions);

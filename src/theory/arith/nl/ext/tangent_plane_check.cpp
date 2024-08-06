@@ -24,6 +24,14 @@
 
 using namespace cvc5::internal::kind;
 
+// for rfp
+#include "util/int_roundingmode.h"
+#include "util/real_floatingpoint.h"
+#include "theory/arith/nl/rfp_utils.h"
+using IRM = typename cvc5::internal::IntRoundingMode;
+namespace RFP = cvc5::internal::RealFloatingPoint;
+using namespace cvc5::internal::theory::arith::nl::RfpUtils;
+
 namespace cvc5::internal {
 namespace theory {
 namespace arith {
@@ -68,6 +76,23 @@ void TangentPlaneCheck::check(bool asWaitingLemmas)
         Assert(!tc_diff.isNull());
         Node a = tc < tc_diff ? tc : tc_diff;
         Node b = tc < tc_diff ? tc_diff : tc;
+
+        //// rfp
+        //std::map<Node, std::pair<Node,uint> >::const_iterator rit = d_data->d_rounds.find(a);
+        //if (rit != d_data->d_rounds.end())
+        //{
+        //  int n = rit->second.second;
+        //  if (n <= 0){
+        //    Trace("rfp-round-prune-debug") << "reset: " << a << std::endl;
+        //    d_data->d_rounds[a].second = ExtState::RFP_ROUND_CMAX;
+        //    continue;
+        //  }else{
+        //    Trace("rfp-round-prune-debug") << "skipped: " << a << std::endl;
+        //    d_data->d_rounds[a].second--;
+        //    //continue;
+        //  }
+        //}
+
         if (dproc[a].find(b) == dproc[a].end())
         {
           dproc[a][b] = true;
@@ -155,6 +180,13 @@ void TangentPlaneCheck::check(bool asWaitingLemmas)
                                            InferenceId::ARITH_NL_TANGENT_PLANE,
                                            proof,
                                            asWaitingLemmas);
+
+              // for rfp
+              d_data->checkRfpComp(Kind::GEQ, b, b_v, asWaitingLemmas);
+              d_data->checkRfpComp(Kind::LEQ, b, b_v, asWaitingLemmas);
+              //d_data->checkRfpComp(d == 0 ? Kind::LEQ : Kind::GEQ, t, tplane, asWaitingLemmas);
+              d_data->checkRfpComp(Kind::GEQ, a, a_v, asWaitingLemmas);
+              d_data->checkRfpComp(Kind::LEQ, a, a_v, asWaitingLemmas);
             }
           }
         }
