@@ -376,7 +376,6 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
   uint32_t sb = sz.significandWidth();
   NodeManager* nm = NodeManager::currentNM();
 
-  // TODO
   Node nan = nm->mkConstReal(RFP::notANumber(eb,sb));
   Node isNan = nm->mkNode(kind::EQUAL, node, nan);
   Node isNotNan = isNan.notNode();
@@ -392,13 +391,13 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
       rm, arg, round, node, aRange);
   }
 
+  // TODO: condition can be modified?
   if (RFP::isNormal(eb,sb, arg) || RFP::isNormal(eb,sb, round))
   //if (RFP::isNormal(eb,sb, arg))
   {
     Rational rerr = Rational(Integer::pow2(sb-1)).inverse();
     //Rational bnd = rerr * arg.abs();
 
-    // TODO
     Node a1 = mkIsNormal(eb,sb, node[1]);
     Node a2 = mkIsNormal(eb,sb, node);
     Node aRange = isNotNan.andNode( a1.orNode(a2) );
@@ -524,10 +523,6 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
         lem, InferenceId::ARITH_NL_RFP_ROUND_PRUNE, nullptr, true);
 
       d_data->registerRfpRound(node[1], node);
-      //d_data->d_ms_prune_vs[std::pair(node,nm->mkConstReal(arg))] = true;
-      //d_data->d_ms_prune_vs[std::pair(node,nm->mkConstReal(argDn))] = true;
-      //Trace("rfp-round-prune") << node[1] << ", " <<  nm->mkConstReal(arg) << std::endl;
-      //Trace("rfp-round-prune") << node[1] << ", " <<  nm->mkConstReal(argDn) << std::endl;
     }
 
     Rational argUp = RFP::round(eb,sb, IRM::TP, arg);
@@ -555,10 +550,6 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
         lem, InferenceId::ARITH_NL_RFP_ROUND_PRUNE, nullptr, true);
 
       d_data->registerRfpRound(node[1], node);
-      //d_data->d_ms_prune_vs[std::pair(node,nm->mkConstReal(arg))] = true;
-      //d_data->d_ms_prune_vs[std::pair(node,nm->mkConstReal(argUp))] = true;
-      //Trace("rfp-round-prune") << node[1] << ", " <<  nm->mkConstReal(arg) << std::endl;
-      //Trace("rfp-round-prune") << node[1] << ", " <<  nm->mkConstReal(argUp) << std::endl;
     }
 
     if (//RFP::plusInfinity(eb,sb) <= arg && 
@@ -612,7 +603,7 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
     }
   }
 
-  // TODO
+  // TODO: condition can be weakened?
   if ((RFP::isZero(eb,sb, arg) || RFP::isInfinite(eb,sb, arg) || RFP::isNan(eb,sb, arg))) 
   {
     // this is the most naive model-based schema based on model values
@@ -689,14 +680,14 @@ void RfpRoundSolver::checkFullRefineRoundPair(TNode node1,
 void RfpRoundSolver::checkRoundError(Rational err0, bool isNearest, 
                                      Integer rm, Rational arg, Rational round, 
                                      Node node, Node aRange, 
-                                     bool isRelational)
+                                     bool isRelative)
 {
   Rational err = isNearest ? err0/2 : err0;
 
   if ( (isNearest && rm != IRM::NA && rm != IRM::NE)
     || (!isNearest && (rm == IRM::NA || rm == IRM::NE))
-    || (!isRelational && (arg - round).abs() <= err)
-    || ( isRelational && (arg - round).abs() <= err * arg.abs()) )
+    || (!isRelative && (arg - round).abs() <= err)
+    || ( isRelative && (arg - round).abs() <= err * arg.abs()) )
   {
     return;
   }
@@ -704,7 +695,7 @@ void RfpRoundSolver::checkRoundError(Rational err0, bool isNearest,
   NodeManager* nm = NodeManager::currentNM();
 
   // Bound for subnormal numbers (RN cases).
-  Node assumption = aRange;
+  Node assumption = rewrite(aRange);
   if (isNearest){
     Node a1 = mkIsToNearest(node[0]);
     assumption = assumption.andNode(a1);
@@ -713,7 +704,7 @@ void RfpRoundSolver::checkRoundError(Rational err0, bool isNearest,
   Node sub = nm->mkNode(kind::SUB, node, node[1]);
 
   Node bndN, bndP;
-  if (!isRelational)
+  if (!isRelative)
   {
     bndN = nm->mkConstReal(-err);
     bndP = nm->mkConstReal(err);
@@ -727,6 +718,7 @@ void RfpRoundSolver::checkRoundError(Rational err0, bool isNearest,
   Node c1 = nm->mkNode(kind::LEQ, bndN, sub);
   Node c2 = nm->mkNode(kind::LEQ, sub, bndP);
   Node conclusion = c1.andNode(c2);
+  conclusion = rewrite(conclusion);
 
   Node lem = assumption.impNode(conclusion);
   Trace("rfp-round-err-lemma") << "RfpRoundSolver::Lemma: " << lem
