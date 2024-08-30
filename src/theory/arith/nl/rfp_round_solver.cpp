@@ -384,10 +384,9 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
   {
     Node a1 = isNotNan.andNode(mkIsSubnormalWeak(eb,sb, node[1]));
     Node a2 = isNotNan.andNode(mkIsSubnormalWeak(eb,sb, node));
-    Node aRange = isNotNan.andNode( a1.orNode(a2) );
-    //Node aRange = isNotNan.andNode(mkIsSubnormal(eb,sb, node));
+    Node aRange = a1.orNode(a2);
+    //Node aRange = mkIsSubnormalWeak(eb,sb, node[1]);
     checkRoundError(RFP::minSubnormal(eb,sb), 
-      rm == IRM::NA || rm == IRM::NE,
       rm, arg, round, node, aRange);
   }
 
@@ -396,26 +395,14 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
   //if (RFP::isNormal(eb,sb, arg))
   {
     Rational rerr = Rational(Integer::pow2(sb-1)).inverse();
-    //Rational bnd = rerr * arg.abs();
 
-    Node a1 = mkIsNormal(eb,sb, node[1]);
-    Node a2 = mkIsNormal(eb,sb, node);
-    Node aRange = isNotNan.andNode( a1.orNode(a2) );
+    //Node a1 = mkIsNormal(eb,sb, node[1]);
+    //Node a2 = mkIsNormal(eb,sb, node);
+    //Node aRange = a1.orNode(a2);
+    Node aRange = mkIsNormal(eb,sb, node[1]);
     checkRoundError(rerr, 
-      rm == IRM::NA || rm == IRM::NE,
       rm, arg, round, node, aRange, true);
   }
-
-  //if (RFP::isNormal(eb,sb, round))
-  //{
-  //  Rational rerr = Rational(Integer::pow2(sb-1)).inverse();
-  //  Rational bnd = rerr * round.abs();
-
-  //  Node aRange = isNotNan.andNode( mkIsNormal(eb,sb, node) );
-  //  checkRoundError(bnd, 
-  //    rm == IRM::NA || rm == IRM::NE,
-  //    rm, arg, round, node, aRange, true);
-  //}
 
   if (RFP::isNormal(eb,sb, arg))
   {
@@ -435,7 +422,6 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
     Node a3 = mkIsNormal(eb,sb, node);
     Node aRange = isNotNan.andNode(a1).andNode(a2).andNode(a3);
     checkRoundError(bnd, 
-      rm == IRM::NA || rm == IRM::NE,
       rm, arg, round, node, aRange);
   }
 
@@ -444,7 +430,6 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
     // Apply roundings since round can be assigned a non-FP value.
     Rational roundAR = RFP::round(eb,sb, IRM::TP, round.abs());
 
-    //int e = rndDn.abs() < rndUp.abs() ? rndUp.ilog2() : rndDn.ilog2();
     int e = roundAR.ilog2();
     Rational bnd = e >= int(sb-1) ? Integer::pow2(e-int(sb-1)) :
       Rational(1) / Integer::pow2(int(sb-1)-e);
@@ -456,7 +441,6 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
     Node a3 = mkIsNormal(eb,sb, node);
     Node aRange = isNotNan.andNode(a1).andNode(a2).andNode(a3);
     checkRoundError(bnd, 
-      rm == IRM::NA || rm == IRM::NE,
       rm, arg, round, node, aRange);
   }
 
@@ -498,7 +482,12 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
     //Node isNan = nm->mkNode(kind::EQUAL, node[1], nan);
     //Node isNotNan = isNan.notNode();
 
+    Trace("rfp-round-debug2") << "a: " << arg << std::endl;
+    Trace("rfp-round-debug2") << "r: " << round << std::endl;
+    Trace("rfp-round-debug2") << "c: " << (round <= arg) << std::endl;
+
     Rational argDn = RFP::round(eb,sb, IRM::TN, arg);
+    Rational argUp = RFP::round(eb,sb, IRM::TP, arg);
 
     if (round <= arg && arg < RFP::plusInfinity(eb,sb) && 
       !(RFP::minusZero(eb,sb) < arg && arg < RFP::plusZero(eb,sb)) &&
@@ -524,8 +513,6 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
 
       d_data->registerRfpRound(node[1], node);
     }
-
-    Rational argUp = RFP::round(eb,sb, IRM::TP, arg);
 
     if (arg <= round && RFP::minusInfinity(eb,sb) < arg && 
       !(RFP::minusZero(eb,sb) < arg && arg < RFP::plusZero(eb,sb)) &&
@@ -677,16 +664,15 @@ void RfpRoundSolver::checkFullRefineRoundPair(TNode node1,
   }
 }
 
-void RfpRoundSolver::checkRoundError(Rational err0, bool isNearest, 
+void RfpRoundSolver::checkRoundError(Rational err0,
                                      Integer rm, Rational arg, Rational round, 
                                      Node node, Node aRange, 
                                      bool isRelative)
 {
+  bool isNearest = (rm == IRM::NA || rm == IRM::NE);
   Rational err = isNearest ? err0/2 : err0;
 
-  if ( (isNearest && rm != IRM::NA && rm != IRM::NE)
-    || (!isNearest && (rm == IRM::NA || rm == IRM::NE))
-    || (!isRelative && (arg - round).abs() <= err)
+  if ( (!isRelative && (arg - round).abs() <= err)
     || ( isRelative && (arg - round).abs() <= err * arg.abs()) )
   {
     return;
