@@ -231,7 +231,7 @@ bool ProcessAssertions::apply(AssertionPipeline& ap)
     applyPass("distinct-elim", ap);
   }
 
-  if (options().smt.fpToReal != options::FpToRealMode::NONE)
+  if (options().smt.fpToReal)
   {
     applyPass("fp-to-real", ap);
   }
