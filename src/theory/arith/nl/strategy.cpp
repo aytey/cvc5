@@ -51,6 +51,9 @@ std::ostream& operator<<(std::ostream& os, InferStep step)
     case InferStep::RFP_INIT: return os << "RFP_INIT";
     case InferStep::RFP_FULL: return os << "RFP_FULL";
     case InferStep::RFP_INITIAL: return os << "RFP_INITIAL";
+    case InferStep::RFP_TO_REAL_INIT: return os << "RFP_TO_REAL_INIT";
+    case InferStep::RFP_TO_REAL_FULL: return os << "RFP_TO_REAL_FULL";
+    case InferStep::RFP_TO_REAL_INITIAL: return os << "RFP_TO_REAL_INITIAL";
     case InferStep::ICP: return os << "ICP";
     case InferStep::NL_INIT: return os << "NL_INIT";
     case InferStep::NL_MONOMIAL_INFER_BOUNDS:
@@ -123,6 +126,8 @@ void Strategy::initializeStrategy(const Options& options)
 
   one << InferStep::RFP_INIT;
   one << InferStep::RFP_INITIAL << InferStep::BREAK;
+  one << InferStep::RFP_TO_REAL_INIT;
+  one << InferStep::RFP_TO_REAL_INITIAL << InferStep::BREAK;
   one << InferStep::RFP_ROUND_INIT;
   one << InferStep::RFP_ROUND_INITIAL << InferStep::BREAK;
 

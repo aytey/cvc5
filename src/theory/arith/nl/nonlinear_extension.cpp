@@ -625,6 +625,15 @@ void NonlinearExtension::runStrategy(const std::vector<Node>& assertions,
       case InferStep::RFP_FULL: 
         d_rfpSlv.checkFullRefine(); 
         break;
+      case InferStep::RFP_TO_REAL_INIT:
+        d_rfpToRealSlv.initLastCall(xts);
+        break;
+      case InferStep::RFP_TO_REAL_INITIAL:
+        d_rfpToRealSlv.checkInitialRefine();
+        break;
+      case InferStep::RFP_TO_REAL_FULL: 
+        d_rfpToRealSlv.checkFullRefine(); 
+        break;
       case InferStep::ICP:
         d_icpSlv.reset(assertions);
         d_icpSlv.check();

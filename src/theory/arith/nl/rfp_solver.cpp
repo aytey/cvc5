@@ -245,13 +245,41 @@ Node RfpSolver::relValueBasedLemma(TNode n)
 
 // RfpToReal
 
-void RfpSolver::checkInitialRefineToReal(Node node) 
-{
-  Trace("rfp-to-real") << "RFP_TO_REAL term (init): " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
-  FloatingPointSize sz = node.getOperator().getConst<RfpToReal>().getSize();
-  uint32_t eb = sz.exponentWidth();
-  uint32_t sb = sz.significandWidth();
+//void RfpSolver::checkInitialRefineToReal(Node node) 
+//{
+//  Trace("rfp-to-real") << "RFP_TO_REAL term (init): " << node << std::endl;
+//  NodeManager* nm = NodeManager::currentNM();
+//  FloatingPointSize sz = node.getOperator().getConst<RfpToReal>().getSize();
+//  uint32_t eb = sz.exponentWidth();
+//  uint32_t sb = sz.significandWidth();
+//
+//  {
+//    Node a1 = mkIsFinite(eb,sb, node[0]);
+//    //Node a2 = mkIsFinite(eb,sb, node);
+//    //Node assumption = a1.orNode(a2);
+//    Node assumption = a1;
+//    Node isZeroX = mkIsZero(eb,sb, node[0]);
+//    Node isZero = node.eqNode(nm->mkConstReal(0)); 
+//    Node eqX = node.eqNode(node[0]);
+//    Node conclusion = isZeroX.iteNode(isZero, eqX);
+//    Node lem = assumption.impNode(conclusion);
+//    Trace("rfp-to-real-lemma")
+//        << "RfpSolver::Lemma: " << lem << " ; INIT_REFINE" << std::endl;
+//    d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
+//  }
+//  {
+//    Node isNormal = mkIsNormal(eb,sb, node);
+//    Node isSubnormal = mkIsSubnormal(eb,sb, node);
+//    Node isZero = mkIsZero(eb,sb, node);
+//    Node isInf = mkIsInf(eb,sb, node);
+//    Node isNan = mkIsNan(eb,sb, node);
+//    Node lem = isNormal.orNode(isSubnormal).orNode(isZero).orNode(isInf).orNode(isNan);
+//    Trace("rfp-to-real-lemma") << "RfpSolver::Lemma: " << lem
+//                               << " ; round_cases ; INIT_REFINE"
+//                               << std::endl;
+//    d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
+//  }
+//}
 
   {
     Node isNotNan = mkIsNan(eb,sb, node[0]).notNode();
@@ -1993,7 +2021,7 @@ Node mkGeqSpecial(uint32_t eb, uint32_t sb, TNode node)
   Node isNotNanY = mkIsNan(eb,sb, node[1]).notNode();
   Node c2 = isPinfX.andNode(isNotNanY);
   Node isNotNanX = mkIsNan(eb,sb, node[0]).notNode();
-  Node isNinfY = mkIsPosInf(eb,sb, node[1]);
+  Node isNinfY = mkIsNegInf(eb,sb, node[1]);
   Node c3 = isNotNanX.andNode(isNinfY);
   Node conclusion = c1.orNode(c2).orNode(c3);
   return assumption.impNode(conclusion);
@@ -2038,10 +2066,10 @@ void RfpSolver::checkInitialRefineGeq(Node node)
   }
   {
     Node lem = mkBoolIntConstraint(node);
-  Trace("rfp-geq-lemma") << "RfpSolver::Lemma: " << lem 
-  << " ; geq_range ; INIT_REFINE"
-  << std::endl;
-  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
+    Trace("rfp-geq-lemma") << "RfpSolver::Lemma: " << lem 
+                           << " ; geq_range ; INIT_REFINE"
+                           << std::endl;
+    d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
 }
 
@@ -2144,7 +2172,7 @@ void RfpSolver::checkFullRefineGeq(Node node)
     Node isNotNanX = mkIsNan(eb,sb, node[0]).notNode();
     Node isNinfY = mkIsNegInf(eb,sb, node[1]);
     Node assumption = isNotNanX.andNode(isNinfY);
-Node lem = assumption.impNode(mkIsOne(node));
+    Node lem = assumption.impNode(mkIsOne(node));
     Trace("rfp-geq-lemma") << "RfpSolver::Lemma: " << lem 
                            << " ; ge_ninf ; COMP"
                            << std::endl;
