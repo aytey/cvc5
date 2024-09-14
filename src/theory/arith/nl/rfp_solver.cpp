@@ -1620,6 +1620,7 @@ void RfpSolver::checkFullRefineDiv(Node node)
   }
 
   if (options().smt.rfpValueRefine == options::rfpVRMode::ALL ||
+      options().smt.rfpValueRefine == options::rfpVRMode::MID ||
       ( (RFP::isZero(eb,sb, x) || RFP::isInfinite(eb,sb, x) || RFP::isNan(eb,sb, x)) &&
         (RFP::isZero(eb,sb, y) || RFP::isInfinite(eb,sb, y) || RFP::isNan(eb,sb, y)) ))
   {
