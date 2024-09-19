@@ -382,7 +382,7 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
   Node isNan = nm->mkNode(kind::EQUAL, node, nan);
   Node isNotNan = isNan.notNode();
 
-  if (options().smt.rfpLazyLearn != options::rfpLLMode::WEAK)
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG)
   {
     if (RFP::isSubnormal(eb,sb, arg) || RFP::isSubnormal(eb,sb, round))
     {

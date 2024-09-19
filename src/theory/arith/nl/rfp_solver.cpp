@@ -442,6 +442,7 @@ void RfpSolver::checkInitialRefineAdd(Node node) {
                            << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::STRONG)
   {
     // add_finite_rev_n
     Node isTN = mkIsToNearest(node[0]);
@@ -503,21 +504,6 @@ void RfpSolver::checkInitialRefineAdd(Node node) {
                            << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
-  //{
-  //  // add_rounded
-  //  Node lem = mkIsRounded(eb,sb, node);
-
-  //  //Node range = mkRangeConstraint(eb,sb, node);
-  //  ////Node rangeX = mkRangeConstraint(eb,sb, node[1]);
-  //  ////Node rangeY = mkRangeConstraint(eb,sb, node[2]);
-  //  ////Node lem = range.andNode(rangeX).andNode(rangeY);
-  //  //Node lem = range;
-
-  //  Trace("rfp-add-lemma") << "RfpSolver::Lemma: " << lem
-  //                         << " ; add_rounded ; INIT_REFINE"
-  //                         << std::endl;
-  //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
-  //}
 }
 
 void RfpSolver::checkFullRefineAdd(Node node)
@@ -838,17 +824,6 @@ void RfpSolver::checkInitialRefineNeg(Node node) {
                            << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
-  //{
-  //  // neg_rounded
-  //  Node lem = mkIsRounded(eb,sb, node);
-  //  //Node range = mkRangeConstraint(eb,sb, node);
-  //  //Node rangeX = mkRangeConstraint(eb,sb, node[0]);
-  //  //Node lem = range;
-  //  Trace("rfp-neg-lemma") << "RfpSolver::Lemma: " << lem
-  //                         << " ; neg_range ; INIT_REFINE"
-  //                         << std::endl;
-  //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
-  //}
 }
 
 void RfpSolver::checkFullRefineNeg(Node node)
@@ -942,6 +917,7 @@ void RfpSolver::checkInitialRefineSub(Node node) {
                            << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::STRONG)
   {
     // sub_finite_rev_n
     Node isTN = mkIsToNearest(node[0]);
@@ -1002,21 +978,12 @@ void RfpSolver::checkInitialRefineSub(Node node) {
                            << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
-  //{
-  //  // sub_rounded
-  //  Node lem = mkIsRounded(eb,sb, node);
-  //  //Node lem = mkRangeConstraint(eb,sb, node);
-  //  Trace("rfp-sub-lemma") << "RfpSolver::Lemma: " << lem
-  //                         << " ; sub_rounded ; INIT_REFINE"
-  //                         << std::endl;
-  //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
-  //}
 }
 
 void RfpSolver::checkFullRefineSub(Node node)
 {
   Trace("rfp-sub") << "RFP_SUB term: " << node << std::endl;
-  //NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = NodeManager::currentNM();
   FloatingPointSize sz = node.getOperator().getConst<RfpSub>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -1031,7 +998,7 @@ void RfpSolver::checkFullRefineSub(Node node)
   Integer rm = valRm.getConst<Rational>().getNumerator();
   Rational x = valX.getConst<Rational>();
   Rational y = valY.getConst<Rational>();
-  Rational t = valTerm.getConst<Rational>();
+  Rational sub = valTerm.getConst<Rational>();
 
   if (TraceIsOn("rfp-sub"))
   {
@@ -1044,6 +1011,28 @@ void RfpSolver::checkFullRefineSub(Node node)
   {
     Trace("rfp-sub") << "...already correct" << std::endl;
     return;
+  }
+
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG &&
+      (rm == IRM::NE || rm == IRM::NA) &&
+      RFP::isFinite(eb,sb, sub) && sub != x && sub != y)
+  {
+    // sub_finite_rev_n
+    Node isTN = mkIsToNearest(node[0]);
+    Node isFinite = mkIsFinite(eb,sb, node);
+    Node aX = node.eqNode(node[1]).notNode();
+    Node aY = node.eqNode(node[2]).notNode();
+    Node assumption = isTN.andNode(isFinite).andNode(aX).andNode(aY);
+    Node subXY = nm->mkNode(Kind::SUB, node[1], node[2]);
+    Node noOverflow = rewrite(mkNoOverflow(eb,sb, node[0], subXY));
+    Node op = nm->mkConst(RfpRound(eb, sb));
+    Node rounded = nm->mkNode(Kind::RFP_ROUND, op, node[0], subXY);
+    Node conclusion = noOverflow.andNode(node.eqNode(rounded));
+    Node lem = assumption.impNode(conclusion);
+    Trace("rfp-sub-lemma") << "RfpSolver::Lemma: " << lem
+                           << " ; sub_finite_rev_n ; AUX_REFINE"
+                           << std::endl;
+    d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE);
   }
 
   if (options().smt.rfpValueRefine == options::rfpVRMode::ALL ||
@@ -1084,12 +1073,12 @@ void RfpSolver::checkInitialRefineMult(Node node)
   //  Node rounded = nm->mkNode(kind::RFP_ROUND, op, node[0], multXY);
   //  Node conclusion = node.eqNode(rounded);
 
-  //  Node lem = assumption.impNode(conclusion);
-  //  Trace("rfp-mult-lemma") << "RfpSolver::Lemma: " << lem 
-  //                          << " ; mul_finite ; INIT_REFINE"
-  //                          << std::endl;
-  //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
-  //}
+    Node lem = assumption.impNode(conclusion);
+    Trace("rfp-mult-lemma") << "RfpSolver::Lemma: " << lem 
+                            << " ; mul_finite ; INIT_REFINE"
+                            << std::endl;
+    d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
+  }
 
   {
     // mul_finite_rev
@@ -1119,7 +1108,27 @@ void RfpSolver::checkInitialRefineMult(Node node)
   //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   //}
 
-  if (options().smt.rfpLazyLearn == options::rfpLLMode::WEAK)
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::STRONG)
+  {
+    // mul_finite_rev_n
+    Node isTN = mkIsToNearest(node[0]);
+    //Node isFinite = mkIsFinite(eb,sb, node);
+    Node isFinite = mkIsFinite(eb,sb, node)
+      .andNode(mkIsZero(eb,sb, node).notNode());
+    Node assumption = isTN.andNode(isFinite);
+    Node multXY = nm->mkNode(Kind::MULT, node[1], node[2]);
+    Node noOverflow = mkNoOverflow(eb,sb, node[0], multXY);
+    Node op = nm->mkConst(RfpRound(eb, sb));
+    Node rounded = nm->mkNode(Kind::RFP_ROUND, op, node[0], multXY);
+    Node conclusion = noOverflow.andNode(node.eqNode(rounded));
+    Node lem = assumption.impNode(conclusion);
+    Trace("rfp-mult-lemma") << "RfpSolver::Lemma: " << lem
+                            << " ; mul_finite_rev_n ; INIT_REFINE"
+                            << std::endl;
+    d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
+  }
+
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::STRONG)
   {
     // mul_zero
     Node isFiniteX = mkIsFinite(eb,sb, node[1]);
@@ -1181,15 +1190,6 @@ void RfpSolver::checkInitialRefineMult(Node node)
                             << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
-  //{
-  //  // mul_rounded
-  //  Node lem = mkIsRounded(eb,sb, node);
-  //  //Node lem = mkRangeConstraint(eb,sb, node);
-  //  Trace("rfp-mult-lemma") << "RfpSolver::Lemma: " << lem
-  //                         << " ; mul_range ; INIT_REFINE"
-  //                         << std::endl;
-  //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
-  //}
 }
 
 void RfpSolver::checkFullRefineMult(Node node)
@@ -1230,8 +1230,7 @@ void RfpSolver::checkFullRefineMult(Node node)
     return;
   }
   
-  if (x == Rational(1) && !RFP::isNan(eb,sb, y) &&
-      mult != y)
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG)
   {
     // mul_one1
     Node isOneX = node[1].eqNode(nm->mkConstReal(1));
@@ -1312,13 +1311,14 @@ void RfpSolver::checkFullRefineMult(Node node)
     rounded = rewrite(rounded);
     Node conclusion = node.eqNode(rounded);
 
-    Node lem = assumption.impNode(conclusion);
-    Trace("rfp-mult-lemma") << "RfpSolver::Lemma: " << lem 
-                            << " ; mul_finite ; AUX_REFINE"
-                            << std::endl;
-    d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE);
-    //d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE,
-    //                     nullptr, true);
+      Node lem = assumption.impNode(conclusion);
+      Trace("rfp-mult-lemma") << "RfpSolver::Lemma: " << lem 
+                              << " ; mul_finite ; AUX_REFINE"
+                              << std::endl;
+      d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE);
+      //d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE,
+      //                     nullptr, true);
+    }
   }
   
   //if (RFP::isFinite(eb,sb, mult) && 
@@ -1337,7 +1337,9 @@ void RfpSolver::checkFullRefineMult(Node node)
   //                       nullptr, true);
   //}
 
-  if (RFP::isFinite(eb,sb, mult) && RFP::isFinite(eb,sb, x*y))
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG &&
+      RFP::isFinite(eb,sb, mult) && !RFP::isZero(eb,sb, mult) && 
+      RFP::isFinite(eb,sb, x*y))
   {
     // mul_finite_rev_n
     Node isTN = mkIsToNearest(node[0]);
@@ -1357,7 +1359,7 @@ void RfpSolver::checkFullRefineMult(Node node)
                          nullptr, true);
   }
 
-  if (options().smt.rfpLazyLearn != options::rfpLLMode::WEAK &&
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG &&
       RFP::isFinite(eb,sb, x) && RFP::isFinite(eb,sb, y) &&
       (RFP::isZero(eb,sb, x) || RFP::isZero(eb,sb, y)) && 
       !RFP::isZero(eb,sb, mult)
@@ -1475,6 +1477,7 @@ void RfpSolver::checkInitialRefineDiv(Node node) {
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
 
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::STRONG)
   {
     // div_finite
     Node aX = mkIsNormal(eb,sb, node[1])
@@ -1496,6 +1499,7 @@ void RfpSolver::checkInitialRefineDiv(Node node) {
                            << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
+
   {
     // div_finite_rev
     Node assumption = mkIsFinite(eb,sb, node);
@@ -1513,6 +1517,8 @@ void RfpSolver::checkInitialRefineDiv(Node node) {
                            << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
+
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::STRONG)
   {
     // div_finite_rev_n
     Node isTN = mkIsToNearest(node[0]);
@@ -1524,11 +1530,12 @@ void RfpSolver::checkInitialRefineDiv(Node node) {
     Node rounded = nm->mkNode(kind::RFP_ROUND, op, node[0], divXY);
     Node conclusion = noOverflow.andNode(node.eqNode(rounded));
     Node lem = assumption.impNode(conclusion);
-    Trace("rfp-mult-lemma") << "RfpSolver::Lemma: " << lem
-                            << " ; mul_finite_rev_n ; INIT_REFINE"
-                            << std::endl;
+    Trace("rfp-div-lemma") << "RfpSolver::Lemma: " << lem
+                           << " ; div_finite_rev_n ; INIT_REFINE"
+                           << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
+
   {
     // div_special
     std::vector<Node> conj;
@@ -1575,21 +1582,12 @@ void RfpSolver::checkInitialRefineDiv(Node node) {
                            << std::endl;
     d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
   }
-  //{
-  //  // div_rounded
-  //  Node lem = mkIsRounded(eb,sb, node);
-  //  //Node lem = mkRangeConstraint(eb,sb, node);
-  //  Trace("rfp-div-lemma") << "RfpSolver::Lemma: " << lem
-  //                         << " ; div_rounded ; INIT_REFINE"
-  //                         << std::endl;
-  //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_INIT_REFINE);
-  //}
 }
 
 void RfpSolver::checkFullRefineDiv(Node node)
 {
   Trace("rfp-div") << "RFP_DIV term: " << node << std::endl;
-  //NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = NodeManager::currentNM();
   FloatingPointSize sz = node.getOperator().getConst<RfpDiv>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -1604,7 +1602,7 @@ void RfpSolver::checkFullRefineDiv(Node node)
   Integer rm = valRm.getConst<Rational>().getNumerator();
   Rational x = valX.getConst<Rational>();
   Rational y = valY.getConst<Rational>();
-  Rational t = valTerm.getConst<Rational>();
+  Rational div = valTerm.getConst<Rational>();
 
   if (TraceIsOn("rfp-div"))
   {
@@ -1617,6 +1615,97 @@ void RfpSolver::checkFullRefineDiv(Node node)
   {
     Trace("rfp-div") << "...already correct" << std::endl;
     return;
+  }
+
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG)
+  {
+    if (!RFP::isNan(eb,sb, x) && y == Rational(1) &&
+        div != x)
+    {
+      // div_one1
+      Node isNotNanX = mkIsNan(eb,sb, node[1]).notNode();
+      Node isOneY = node[2].eqNode(nm->mkConstReal(1));
+      Node assumption = isNotNanX.andNode(isOneY);
+      Node conclusion = node.eqNode(node[1]);
+      Node lem = assumption.impNode(conclusion);
+      Trace("rfp-div-lemma") << "RfpSolver::Lemma: " << lem << " ; AUX_REFINE"
+                             << std::endl;
+      d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE,
+                           nullptr, true);
+    }
+    else if (!RFP::isNan(eb,sb, x) && y == Rational(-1) &&
+             div != -x)
+    {
+      // div_one2
+      Node isNotNanX = mkIsNan(eb,sb, node[1]).notNode();
+      Node isOneY = node[2].eqNode(nm->mkConstReal(-1));
+      Node assumption = isNotNanX.andNode(isOneY);
+      Node negOp = nm->mkConst(RfpNeg(eb,sb));
+      Node neg = nm->mkNode(Kind::RFP_NEG, negOp, node[1]);
+      Node conclusion = node.eqNode(neg);
+      Node lem = assumption.impNode(conclusion);
+      Trace("rfp-div-lemma") << "RfpSolver::Lemma: " << lem << " ; AUX_REFINE"
+                             << std::endl;
+      d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE,
+                           nullptr, true);
+    }
+    else if (//(RFP::isNormal(eb,sb, x) || RFP::isSubnormal(eb,sb, x)) &&
+             //(RFP::isNormal(eb,sb, y) || RFP::isSubnormal(eb,sb, y)) &&
+             RFP::isFinite(eb,sb, x) && !RFP::isZero(eb,sb, x) &&
+             RFP::isFinite(eb,sb, y) && !RFP::isZero(eb,sb, y) &&
+             RFP::noOverflow(eb,sb, rm.getUnsignedInt(), x/y) )
+    {
+      // div_finite
+      //Node aX = mkIsNormal(eb,sb, node[1])
+      //  .orNode(mkIsSubnormal(eb,sb, node[1]));
+      //Node aY = mkIsNormal(eb,sb, node[2])
+      //  .orNode(mkIsSubnormal(eb,sb, node[2]));
+      Node aX = mkIsFinite(eb,sb, node[1])
+        .andNode(mkIsZero(eb,sb, node[1]).notNode());
+      Node aY = mkIsFinite(eb,sb, node[2])
+        .andNode(mkIsZero(eb,sb, node[2]).notNode());
+      Node divXY = nm->mkNode(Kind::DIVISION, node[1], node[2]);
+      divXY = rewrite(divXY);
+      Node noOverflow = mkNoOverflow(eb,sb, node[0], divXY);
+      noOverflow = rewrite(noOverflow);
+      Node assumption = aX.andNode(aY).andNode(noOverflow);
+
+      Node op = nm->mkConst(RfpRound(eb,sb));
+      Node round = nm->mkNode(Kind::RFP_ROUND, op, node[0], divXY);
+      Node conclusion = node.eqNode(round);
+
+      Node lem = assumption.impNode(conclusion);
+      Trace("rfp-div-lemma") << "RfpSolver::Lemma: " << lem 
+                             << " ; div_finite ; AUX_REFINE"
+                             << std::endl;
+      d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE);
+    }
+  }
+
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG &&
+      RFP::isFinite(eb,sb, div) && !RFP::isZero(eb,sb, div) &&
+      RFP::isFinite(eb,sb, y) && !RFP::isZero(eb,sb, y) &&
+      RFP::isFinite(eb,sb, x/y))
+  {
+    // div_finite_rev_n
+    Node isTN = mkIsToNearest(node[0]);
+    //Node isFinite = mkIsFinite(eb,sb, node);
+    Node isFinite = mkIsFinite(eb,sb, node)
+      .andNode(mkIsZero(eb,sb, node).notNode());
+    Node isFiniteY = mkIsFinite(eb,sb, node[2]);
+    Node assumption = isTN.andNode(isFinite).andNode(isFiniteY);
+    Node divXY = nm->mkNode(Kind::DIVISION, node[1], node[2]);
+    divXY = rewrite(divXY);
+    Node noOverflow = mkNoOverflow(eb,sb, node[0], divXY);
+    noOverflow = rewrite(noOverflow);
+    Node op = nm->mkConst(RfpRound(eb, sb));
+    Node rounded = nm->mkNode(Kind::RFP_ROUND, op, node[0], divXY);
+    Node conclusion = noOverflow.andNode(node.eqNode(rounded));
+    Node lem = assumption.impNode(conclusion);
+    Trace("rfp-div-lemma") << "RfpSolver::Lemma: " << lem
+                           << " ; div_finite_rev_n ; AUX_REFINE"
+                           << std::endl;
+    d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE);
   }
 
   if (options().smt.rfpValueRefine == options::rfpVRMode::ALL ||
@@ -1672,7 +1761,7 @@ void RfpSolver::checkInitialRefineGt(Node node)
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
 
-  if (options().smt.rfpLazyLearn == options::rfpLLMode::WEAK)
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::STRONG)
   {
     // gt_finite
     Node isFiniteX = mkIsFinite(eb,sb, node[0]);
@@ -1844,7 +1933,7 @@ void RfpSolver::checkFullRefineGt(Node node)
   //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_COMP);
   //}
 
-  if (options().smt.rfpLazyLearn != options::rfpLLMode::WEAK &&
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG &&
       RFP::isFinite(eb,sb, x) && RFP::isFinite(eb,sb, y) &&
       //!RFP::isNan(eb,sb, x) && !RFP::isNan(eb,sb, y) &&
       (!RFP::isZero(eb,sb, x) || !RFP::isZero(eb,sb, y)) &&
@@ -2036,7 +2125,7 @@ void RfpSolver::checkInitialRefineGeq(Node node)
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
 
-  if (options().smt.rfpLazyLearn == options::rfpLLMode::WEAK)
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::STRONG)
   {
     // ge_finite
     Node isFiniteX = mkIsFinite(eb,sb, node[0]);
@@ -2123,7 +2212,7 @@ void RfpSolver::checkFullRefineGeq(Node node)
   //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE);
   //}
 
-  if (options().smt.rfpLazyLearn != options::rfpLLMode::WEAK &&
+  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG &&
       RFP::isFinite(eb,sb, x) && RFP::isFinite(eb,sb, y) && 
       //!RFP::isNan(eb,sb, x) && !RFP::isNan(eb,sb, y) && 
       !RFP::isZero(eb,sb, x) && !RFP::isZero(eb,sb, y) &&
