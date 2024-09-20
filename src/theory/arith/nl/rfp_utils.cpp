@@ -107,7 +107,7 @@ Node mkIsNormal(uint32_t eb, uint32_t sb, TNode x)
 {
   NodeManager* nm = NodeManager::currentNM();
   Node isFinite = mkIsFinite(eb,sb, x);
-    Node minNormalN = nm->mkConstReal(-RFP::minNormal(eb,sb));
+  Node minNormalN = nm->mkConstReal(-RFP::minNormal(eb,sb));
   Node minNormalP = nm->mkConstReal(RFP::minNormal(eb,sb));
   Node minNNB = nm->mkNode(kind::LEQ, x, minNormalN);
   Node minNPB = nm->mkNode(kind::LEQ, minNormalP, x);
@@ -129,13 +129,19 @@ Node mkIsSubnormal(uint32_t eb, uint32_t sb, TNode x)
   Node minNPB = nm->mkNode(LT, x, minNormalP);
   Node minNP = minNNB.orNode(minNPB);
 
-  return minSB.andNode(minNP);
+  Node minSubnormalP = nm->mkConstReal(RFP::minSubnormal(eb,sb));
+  Node minNormalP = nm->mkConstReal(RFP::minNormal(eb,sb));
+  Node minSPB = nm->mkNode(Kind::LEQ, minSubnormalP, x);
+  Node minNPB = nm->mkNode(Kind::LT, x, minNormalP);
+  Node pB = minSPB.andNode(minNPB);
+
+  return nB.orNode(pB);
 }
 
 Node mkIsSubnormalWeak(uint32_t eb, uint32_t sb, TNode x)
 {
   NodeManager* nm = NodeManager::currentNM();
-    Node minNormalN = nm->mkConstReal(-RFP::minNormal(eb,sb));
+  Node minNormalN = nm->mkConstReal(-RFP::minNormal(eb,sb));
   Node minNormalP = nm->mkConstReal(RFP::minNormal(eb,sb));
   Node minNNB = nm->mkNode(LT, minNormalN, x);
   Node minNPB = nm->mkNode(LT, x, minNormalP);

@@ -167,6 +167,21 @@ PreprocessingPassResult FPToReal::applyInternal(
     Trace("fp-to-real") << "rw node: " << rwNode << std::endl;
     assertionsToPreprocess->replace(i, rwNode);
   }
+
+  for (auto it1 = d_toRealCache.begin(); it1 != d_toRealCache.end(); it1++) 
+  {
+    for (auto it2 = it1; it2 != d_toRealCache.end(); it2++) 
+    {
+      if (it1 != it2){
+        Node assumption = it1->first.eqNode(it2->first);
+        Node conclusion = it1->second.eqNode(it2->second);
+        Node lemma = assumption.impNode(conclusion);
+        additionalConstraints.push_back(lemma);
+      }
+    }
+  }
+  d_toRealCache.clear();
+
   addFinalizeAssertions(assertionsToPreprocess, additionalConstraints);
   addSkolemDefinitions(skolems);
   return PreprocessingPassResult::NO_CONFLICT;
@@ -401,12 +416,17 @@ Node FPToReal::translateWithChildren(
       returnNode = d_nm->mkNode(kind::EQUAL, translated_children);
       break;
     }
+    case Kind::ITE:
+    {
+      returnNode = d_nm->mkNode(Kind::ITE, translated_children);
+      break;
+    }
     default:
     {
       Trace("fp-to-real") << "Unsupported kind: " << newKind << endl;
 
       // first, verify that we haven't missed
-      // any bv operator
+      // any fp operator
       Assert(theory::kindToTheoryId(newKind) != THEORY_FP);
 
       // In the default case, we have reached an operator that we do not
