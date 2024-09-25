@@ -15,7 +15,6 @@
 
 #include "theory/arith/nl/rfp_utils.h"
 
-#include "theory/arith/nl/nl_model.h"
 #include "util/int_roundingmode.h"
 #include "util/real_floatingpoint.h"
 
@@ -66,7 +65,7 @@ Node mkBoolIntConstraint(TNode i)
 Node mkIsFinite(uint32_t eb, uint32_t sb, TNode x)
 {
   NodeManager* nm = NodeManager::currentNM();
-    Node maxN = nm->mkConstReal(-RFP::maxValue(eb,sb));
+  Node maxN = nm->mkConstReal(-RFP::maxValue(eb,sb));
   Node maxP = nm->mkConstReal(RFP::maxValue(eb,sb));
   Node maxNB = nm->mkNode(LEQ, maxN, x);
   Node maxPB = nm->mkNode(LEQ, x, maxP);

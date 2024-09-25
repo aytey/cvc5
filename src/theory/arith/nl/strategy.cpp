@@ -46,14 +46,25 @@ std::ostream& operator<<(std::ostream& os, InferStep step)
     case InferStep::ILOG2_FULL: return os << "ILOG2_FULL";
     case InferStep::ILOG2_INITIAL: return os << "ILOG2_INITIAL";
     case InferStep::RFP_ROUND_INIT: return os << "RFP_ROUND_INIT";
-    case InferStep::RFP_ROUND_FULL: return os << "RFP_ROUND_FULL";
     case InferStep::RFP_ROUND_INITIAL: return os << "RFP_ROUND_INITIAL";
+    case InferStep::RFP_ROUND_AUX: return os << "RFP_ROUND_AUX";
+    case InferStep::RFP_ROUND_FULL: return os << "RFP_ROUND_FULL";
     case InferStep::RFP_INIT: return os << "RFP_INIT";
-    case InferStep::RFP_FULL: return os << "RFP_FULL";
     case InferStep::RFP_INITIAL: return os << "RFP_INITIAL";
+    case InferStep::RFP_AUX: return os << "RFP_AUX";
+    case InferStep::RFP_FULL: return os << "RFP_FULL";
+    case InferStep::RFP_MULT_INIT: return os << "RFP_MULT_INIT";
+    case InferStep::RFP_MULT_INITIAL: return os << "RFP_MULT_INITIAL";
+    case InferStep::RFP_MULT_AUX: return os << "RFP_MULT_AUX";
+    case InferStep::RFP_MULT_FULL: return os << "RFP_MULT_FULL";
+    case InferStep::RFP_COMP_INIT: return os << "RFP_COMP_INIT";
+    case InferStep::RFP_COMP_INITIAL: return os << "RFP_COMP_INITIAL";
+    case InferStep::RFP_COMP_AUX: return os << "RFP_COMP_AUX";
+    case InferStep::RFP_COMP_FULL: return os << "RFP_COMP_FULL";
     case InferStep::RFP_TO_REAL_INIT: return os << "RFP_TO_REAL_INIT";
-    case InferStep::RFP_TO_REAL_FULL: return os << "RFP_TO_REAL_FULL";
     case InferStep::RFP_TO_REAL_INITIAL: return os << "RFP_TO_REAL_INITIAL";
+    case InferStep::RFP_TO_REAL_AUX: return os << "RFP_TO_REAL_AUX";
+    case InferStep::RFP_TO_REAL_FULL: return os << "RFP_TO_REAL_FULL";
     case InferStep::ICP: return os << "ICP";
     case InferStep::NL_INIT: return os << "NL_INIT";
     case InferStep::NL_MONOMIAL_INFER_BOUNDS:
@@ -124,12 +135,13 @@ void Strategy::initializeStrategy(const Options& options)
 {
   StepSequence one;
 
+  one << InferStep::RFP_MULT_INIT;
+  one << InferStep::RFP_MULT_INITIAL;
   one << InferStep::RFP_INIT;
-  one << InferStep::RFP_INITIAL << InferStep::BREAK;
-  one << InferStep::RFP_TO_REAL_INIT;
-  one << InferStep::RFP_TO_REAL_INITIAL << InferStep::BREAK;
-  one << InferStep::RFP_ROUND_INIT;
-  one << InferStep::RFP_ROUND_INITIAL << InferStep::BREAK;
+  one << InferStep::RFP_INITIAL;
+  one << InferStep::RFP_COMP_INIT;
+  one << InferStep::RFP_COMP_INITIAL;
+  one << InferStep::BREAK;
 
   if (options.arith.nlICP)
   {

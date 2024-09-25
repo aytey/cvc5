@@ -10,18 +10,17 @@
  * directory for licensing information.
  * ****************************************************************************
  *
- * Implementation of RFP_ROUND solver.
+ * Implementation of the RFP solver for rfp.round and rfp.to_fp.
  */
 
 #include "theory/arith/nl/rfp_round_solver.h"
 
-#include "options/arith_options.h"
+#include "options/base_options.h"
 #include "options/smt_options.h"
 #include "theory/arith/arith_msum.h"
-#include "theory/arith/arith_utilities.h"
 #include "theory/arith/inference_manager.h"
-#include "theory/arith/nl/ext/ext_state.h"
 #include "theory/arith/nl/nl_model.h"
+#include "theory/arith/nl/ext/ext_state.h"
 #include "theory/rewriter.h"
 #include "util/int_roundingmode.h"
 #include "util/real_floatingpoint.h"
@@ -45,24 +44,13 @@ RfpRoundSolver::RfpRoundSolver(Env& env,
                                InferenceManager& im,
                                NlModel& model,
                                ExtState* data)
-    : EnvObj(env),
-      d_im(im),
-      d_model(model),
-      d_data(data),
-      d_initRefine(userContext())
-{
-  NodeManager* nm = NodeManager::currentNM();
-  d_false = nm->mkConst(false);
-  d_true = nm->mkConst(true);
-  d_zero = nm->mkConstReal(Rational(0));
-  d_one = nm->mkConstReal(Rational(1));
-}
+    : RfpSolver(env, im, model),
+      d_data(data)
+{}
 
 RfpRoundSolver::~RfpRoundSolver() {}
 
-void RfpRoundSolver::initLastCall(const std::vector<Node>& assertions,
-                                  const std::vector<Node>& false_asserts,
-                                  const std::vector<Node>& xts)
+bool RfpRoundSolver::isTarget(const Node& n)
 {
   d_rounds.clear();
   d_toRfps.clear();
@@ -95,9 +83,11 @@ void RfpRoundSolver::initLastCall(const std::vector<Node>& assertions,
   }
 }
 
-void RfpRoundSolver::checkInitialRefine()
+//
+
+void RfpRoundSolver::checkInitialRefineRound(Node node) 
 {
-  Trace("rfp-round-check") << "RfpRoundSolver::checkInitialRefine" << std::endl;
+  Trace("rfp-round-solver") << "RFP_ROUND term (init): " << node << std::endl;
   NodeManager* nm = NodeManager::currentNM();
   for (const std::pair<const unsigned, std::vector<Node> >& is : d_rounds)
   {
@@ -366,14 +356,48 @@ void RfpRoundSolver::checkInitRefineRound(TNode node)
   }
 }
 
-void RfpRoundSolver::checkFullRefineRound(TNode node, 
-  const Integer& rm, const Rational& arg, 
-  const Rational& round, const Rational& roundC)
+void RfpRoundSolver::checkAuxRefineRound(Node node) 
 {
+  Trace("rfp-round") << "RFP_ROUND term: " << node << std::endl;
+  NodeManager* nm = NodeManager::currentNM();
   FloatingPointSize sz = node.getOperator().getConst<RfpRound>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
-  NodeManager* nm = NodeManager::currentNM();
+
+  Node valRound = d_model.computeAbstractModelValue(node);
+  Node valRoundC = d_model.computeConcreteModelValue(node);
+
+  Node valRmA = d_model.computeAbstractModelValue(node[0]);
+  Node valArgA = d_model.computeAbstractModelValue(node[1]);
+  Node valRm = d_model.computeConcreteModelValue(node[0]);
+  Node valArg = d_model.computeConcreteModelValue(node[1]);
+
+  Integer rm = valRm.getConst<Rational>().getNumerator();
+  Rational arg = valArg.getConst<Rational>();
+  Rational round = valRound.getConst<Rational>();
+  Rational roundC = valRoundC.getConst<Rational>();
+
+  if (TraceIsOn("rfp-round"))
+  {
+    Trace("rfp-round") << "* " << node 
+                       << std::endl;
+    Trace("rfp-round") << "  value  (" << valRmA << ", " 
+                       << valArgA << ") = " << valRound
+                       << std::endl;
+    Trace("rfp-round") << "  actual (" << rm << ", " 
+                       << arg << ") = " << valRoundC 
+                       << std::endl;
+
+    Rational tC = valRoundC.getConst<Rational>();
+    Trace("rfp-round") << "         (" << rm << ", "
+                       << ARFP(eb,sb, arg)
+                       << ") = " << ARFP(eb,sb, tC) << std::endl;
+  }
+  if (valRound == valRoundC)
+  {
+    Trace("rfp-round") << "...already correct" << std::endl;
+    return;
+  }
 
   // TODO
   d_data->registerRfpRound(node[1], node);
@@ -382,7 +406,7 @@ void RfpRoundSolver::checkFullRefineRound(TNode node,
   Node isNan = nm->mkNode(kind::EQUAL, node, nan);
   Node isNotNan = isNan.notNode();
 
-  if (options().smt.rfpLazyLearn == options::rfpLLMode::STRONG)
+  if (options().smt.rfpLazyLearn != options::rfpLLMode::WEAK)
   {
     if (RFP::isSubnormal(eb,sb, arg) || RFP::isSubnormal(eb,sb, round))
     {
@@ -713,7 +737,9 @@ void RfpRoundSolver::checkRoundError(Rational err0,
   d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_ROUND_BOUND);
 }
 
-Node RfpRoundSolver::valueBasedLemma(Node node)
+//
+
+void RfpRoundSolver::checkInitialRefineToRfp(Node node) 
 {
   Assert(node.getKind() == RFP_ROUND || node.getKind() == RFP_TO_RFP_FROM_RFP);
   Node rm = node[0];

@@ -613,6 +613,9 @@ void NonlinearExtension::runStrategy(const std::vector<Node>& assertions,
       case InferStep::RFP_ROUND_INITIAL:
         d_rfpRoundSlv.checkInitialRefine();
         break;
+      case InferStep::RFP_ROUND_AUX: 
+        d_rfpRoundSlv.checkAuxRefine(); 
+        break;
       case InferStep::RFP_ROUND_FULL: 
         d_rfpRoundSlv.checkFullRefine(); 
         break;
@@ -622,14 +625,44 @@ void NonlinearExtension::runStrategy(const std::vector<Node>& assertions,
       case InferStep::RFP_INITIAL:
         d_rfpSlv.checkInitialRefine();
         break;
+      case InferStep::RFP_AUX: 
+        d_rfpSlv.checkAuxRefine(); 
+        break;
       case InferStep::RFP_FULL: 
         d_rfpSlv.checkFullRefine(); 
         break;
+      case InferStep::RFP_MULT_INIT:
+        d_rfpMultSlv.initLastCall(assertions, false_asserts, xts);
+        break;
+      case InferStep::RFP_MULT_INITIAL:
+        d_rfpMultSlv.checkInitialRefine();
+        break;
+      case InferStep::RFP_MULT_AUX: 
+        d_rfpMultSlv.checkAuxRefine(); 
+        break;
+      case InferStep::RFP_MULT_FULL: 
+        d_rfpMultSlv.checkFullRefine(); 
+        break;
+      case InferStep::RFP_COMP_INIT:
+        d_rfpCompSlv.initLastCall(assertions, false_asserts, xts);
+        break;
+      case InferStep::RFP_COMP_INITIAL:
+        d_rfpCompSlv.checkInitialRefine();
+        break;
+      case InferStep::RFP_COMP_AUX: 
+        d_rfpCompSlv.checkAuxRefine(); 
+        break;
+      case InferStep::RFP_COMP_FULL: 
+        d_rfpCompSlv.checkFullRefine(); 
+        break;
       case InferStep::RFP_TO_REAL_INIT:
-        d_rfpToRealSlv.initLastCall(xts);
+        d_rfpToRealSlv.initLastCall(assertions, false_asserts, xts);
         break;
       case InferStep::RFP_TO_REAL_INITIAL:
         d_rfpToRealSlv.checkInitialRefine();
+        break;
+      case InferStep::RFP_TO_REAL_AUX: 
+        d_rfpToRealSlv.checkAuxRefine(); 
         break;
       case InferStep::RFP_TO_REAL_FULL: 
         d_rfpToRealSlv.checkFullRefine(); 
