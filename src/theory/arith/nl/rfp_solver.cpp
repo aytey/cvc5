@@ -27,7 +27,7 @@
 
 using namespace cvc5::internal::kind;
 
-using IRM = typename cvc5::internal::IntRoundingMode;
+typedef cvc5::internal::IntRoundingMode IRM;
 namespace RFP = cvc5::internal::RealFloatingPoint;
 using namespace cvc5::internal::theory::arith::nl::RfpUtils;
 
@@ -66,7 +66,7 @@ void RfpSolver::initLastCall(const std::vector<Node>& assertions,
   {
     if (!isTarget(n)) continue;
 
-    u_int32_t hash;
+    uint32_t hash;
     switch (n.getKind())
     {
       case RFP_TO_REAL: hash = n.getOperator().getConst<RfpToReal>(); break;
@@ -868,7 +868,7 @@ void RfpSolver::checkAuxRefineAdd(Node node)
   //  d_im.addPendingLemma(lem, InferenceId::ARITH_NL_RFP_AUX_REFINE);
   //}
 
-  //if ((x >= 0 == y >= 0) && (add >= 0 != x >= 0)
+  //if ((x >= 0) == (y >= 0) && (add >= 0) != (x >= 0)
   //  && RFP::isFinite(eb,sb, x) && RFP::isFinite(eb,sb, y))
   //{
   //  // add_special 7 weakened
