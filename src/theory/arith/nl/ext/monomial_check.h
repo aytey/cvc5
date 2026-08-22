@@ -234,6 +234,16 @@ class MonomialCheck : protected EnvObj
   // list of monomials with factors whose model value is non-constant in model
   //  e.g. y*cos( x )
   std::map<Node, bool> d_m_nconst_factor;
+
+  /** Literals already processed for comparisons involving RFP rounds. */
+  std::map<Node, bool> d_ms_round_lits;
+
+  /** Add comparison lemmas for rounded forms of a and b. */
+  void checkCompRounds(Node lit,
+                       Node a,
+                       Node b,
+                       Kind status,
+                       bool isAbsolute = false);
   /** A proof generator for MACRO_ARITH_NL_COMPARISON steps */
   std::shared_ptr<ArithNlCompareProofGenerator> d_ancPfGen;
 };

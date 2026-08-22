@@ -46,6 +46,7 @@ libcvc5_add_sources(
   iand.h
   index.cpp
   index.h
+  int_roundingmode.h
   omt_result.cpp
   omt_result.h 
   ostream_util.cpp

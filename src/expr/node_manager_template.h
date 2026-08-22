@@ -524,7 +524,8 @@ class NodeManager
   static Node mkNode(Kind kind, TNode child1, TNode child2, TNode child3);
 
   /** Create a node with four children. */
-  Node mkNode(Kind kind, TNode child1, TNode child2, TNode child3, TNode child4);
+  static Node mkNode(
+      Kind kind, TNode child1, TNode child2, TNode child3, TNode child4);
 
   /** Create a node with an arbitrary number of children. */
   template <bool ref_count>
@@ -583,7 +584,8 @@ class NodeManager
   static Node mkNode(TNode opNode, TNode child1, TNode child2, TNode child3);
 
   /** Create a node with four children by operator. */
-  Node mkNode(TNode opNode, TNode child1, TNode child2, TNode child3, TNode child4);
+  static Node mkNode(
+      TNode opNode, TNode child1, TNode child2, TNode child3, TNode child4);
 
   /** Create a node by applying an operator to the children. */
   template <bool ref_count>
@@ -1202,9 +1204,13 @@ inline Node NodeManager::mkNode(Kind kind,
   return nb.constructNode();
 }
 
-inline Node NodeManager::mkNode(Kind kind, TNode child1, TNode child2,
-                                TNode child3, TNode child4) {
-  NodeBuilder nb(this, kind);
+inline Node NodeManager::mkNode(Kind kind,
+                                TNode child1,
+                                TNode child2,
+                                TNode child3,
+                                TNode child4)
+{
+  NodeBuilder nb(child1.getNodeManager(), kind);
   nb << child1 << child2 << child3 << child4;
   return nb.constructNode();
 }
@@ -1291,6 +1297,21 @@ inline Node NodeManager::mkNode(TNode opNode,
     nb << opNode;
   }
   nb << child1 << child2 << child3;
+  return nb.constructNode();
+}
+
+inline Node NodeManager::mkNode(TNode opNode,
+                                TNode child1,
+                                TNode child2,
+                                TNode child3,
+                                TNode child4)
+{
+  NodeBuilder nb(opNode.getNodeManager(), operatorToKind(opNode));
+  if (opNode.getKind() != Kind::BUILTIN)
+  {
+    nb << opNode;
+  }
+  nb << child1 << child2 << child3 << child4;
   return nb.constructNode();
 }
 

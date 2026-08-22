@@ -51,6 +51,19 @@ void EqualitySolver::finishInit()
   d_ee->addFunctionKind(Kind::IAND);
   d_ee->addFunctionKind(Kind::PIAND);
   d_ee->addFunctionKind(Kind::POW2);
+  //d_ee->addFunctionKind(Kind::ILOG2);
+  d_ee->addFunctionKind(Kind::RFP_ROUND);
+  d_ee->addFunctionKind(Kind::RFP_TO_RFP_FROM_RFP);
+  d_ee->addFunctionKind(Kind::RFP_TO_REAL);
+  d_ee->addFunctionKind(Kind::RFP_ADD);
+  d_ee->addFunctionKind(Kind::RFP_NEG);
+  d_ee->addFunctionKind(Kind::RFP_SUB);
+  d_ee->addFunctionKind(Kind::RFP_MULT);
+  d_ee->addFunctionKind(Kind::RFP_DIV);
+  d_ee->addFunctionKind(Kind::RFP_LT);
+  d_ee->addFunctionKind(Kind::RFP_LEQ);
+  d_ee->addFunctionKind(Kind::RFP_GT);
+  d_ee->addFunctionKind(Kind::RFP_GEQ);
 }
 
 bool EqualitySolver::preNotifyFact(TNode atom,

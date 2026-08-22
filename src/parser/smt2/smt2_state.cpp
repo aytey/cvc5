@@ -844,6 +844,44 @@ void Smt2State::setLogic(std::string name)
       addOperator(Kind::POW2, "int.pow2");
       // log2
       addOperator(Kind::LOG2, "int.log2");
+
+      // rounding modes
+      defineVar("irm.ne", d_tm.mkInteger(internal::IntRoundingMode::NE));
+      defineVar("irm.na", d_tm.mkInteger(internal::IntRoundingMode::NA));
+      defineVar("irm.tp", d_tm.mkInteger(internal::IntRoundingMode::TP));
+      defineVar("irm.tn", d_tm.mkInteger(internal::IntRoundingMode::TN));
+      defineVar("irm.tz", d_tm.mkInteger(internal::IntRoundingMode::TZ));
+
+      addOperator(Kind::IRM_TO_INT, "irm.to_int");
+      addOperator(Kind::IRM_TO_RM, "irm.to_rm");
+
+      // conversion between RFP and FP values
+      addOperator(Kind::RFP_ROUND, "rfp.to_fp");
+
+      // real version of fp.to_real
+      addOperator(Kind::RFP_TO_REAL, "rfp.to_real");
+
+      // real versions of floating-point classification operators
+      addIndexedOperator(Kind::RFP_IS_NORMAL, "rfp.isNormal");
+      addIndexedOperator(Kind::RFP_IS_SUBNORMAL, "rfp.isSubnormal");
+      addIndexedOperator(Kind::RFP_IS_ZERO, "rfp.isZero");
+      addIndexedOperator(Kind::RFP_IS_INF, "rfp.isInfinite");
+      addIndexedOperator(Kind::RFP_IS_NAN, "rfp.isNaN");
+      addIndexedOperator(Kind::RFP_IS_NEG, "rfp.isNegative");
+      addIndexedOperator(Kind::RFP_IS_POS, "rfp.isPositive");
+
+      // real versions of floating-point conversion and arithmetic operators
+      addIndexedOperator(Kind::RFP_TO_RFP_FROM_RFP, "rfp.to_fp");
+      addIndexedOperator(Kind::RFP_ADD, "rfp.add");
+      addIndexedOperator(Kind::RFP_SUB, "rfp.sub");
+      addIndexedOperator(Kind::RFP_NEG, "rfp.neg");
+      addIndexedOperator(Kind::RFP_MULT, "rfp.mul");
+      addIndexedOperator(Kind::RFP_DIV, "rfp.div");
+      addIndexedOperator(Kind::RFP_EQ, "rfp.eq");
+      addIndexedOperator(Kind::RFP_LT, "rfp.lt");
+      addIndexedOperator(Kind::RFP_LEQ, "rfp.leq");
+      addIndexedOperator(Kind::RFP_GT, "rfp.gt");
+      addIndexedOperator(Kind::RFP_GEQ, "rfp.geq");
     }
   }
 

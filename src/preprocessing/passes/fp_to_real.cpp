@@ -39,6 +39,7 @@ namespace passes {
 
 using namespace std;
 using namespace cvc5::internal::theory;
+using namespace cvc5::internal::kind;
 
 namespace RFP = cvc5::internal::RealFloatingPoint;
 using namespace cvc5::internal::theory::arith::nl::RfpUtils;
@@ -48,7 +49,7 @@ FPToReal::FPToReal(PreprocessingPassContext* preprocContext)
       d_realblastCache(userContext()),
       d_rangeAssertions(userContext())
 {
-  d_nm = NodeManager::currentNM();
+  d_nm = nodeManager();
   d_zero = d_nm->mkConstReal(0);
   d_one = d_nm->mkConstReal(1);
 }
@@ -85,7 +86,7 @@ Node FPToReal::realBlast(Node n,
       }
       // If this is a UF application, we also add the function to
       // toVisit.
-      if (current.getKind() == kind::APPLY_UF)
+      if (current.getKind() == Kind::APPLY_UF)
       {
         toVisit.push_back(current.getOperator());
       }
@@ -123,7 +124,7 @@ Node FPToReal::realBlast(Node n,
            * this list.
            */
           std::vector<Node> translated_children;
-          if (current.getKind() == kind::APPLY_UF)
+          if (current.getKind() == Kind::APPLY_UF)
           {
             Assert(d_realblastCache.find(current.getOperator())
                    != d_realblastCache.end());
@@ -159,7 +160,7 @@ PreprocessingPassResult FPToReal::applyInternal(
   for (uint64_t i = 0; i < assertionsToPreprocess->size(); ++i)
   {
     Node origNode = (*assertionsToPreprocess)[i];
-    //Node newNode = d_nm->mkNode(kind::LT, d_zero, d_one);
+    //Node newNode = d_nm->mkNode(Kind::LT, d_zero, d_one);
     Node newNode = realBlast(origNode, additionalConstraints, skolems);
     Node rwNode = rewrite(newNode);
     Trace("fp-to-real") << "orig node: " << origNode << std::endl;
@@ -206,9 +207,9 @@ void FPToReal::addFPRangeConstraint(Node node,
 void FPToReal::addRMRangeConstraint(Node node,
                                     std::vector<Node>& lemmas)
 {
-  Node lower = d_nm->mkNode(kind::LEQ, d_nm->mkConstInt(0), node);
-  Node upper = d_nm->mkNode(kind::LEQ, node, d_nm->mkConstInt(4));
-  Node constr = d_nm->mkNode(kind::AND, lower, upper);
+  Node lower = d_nm->mkNode(Kind::LEQ, d_nm->mkConstInt(0), node);
+  Node upper = d_nm->mkNode(Kind::LEQ, node, d_nm->mkConstInt(4));
+  Node constr = d_nm->mkNode(Kind::AND, lower, upper);
   if (d_rangeAssertions.find(constr) == d_rangeAssertions.end())
   {
     Trace("fp-to-real") << "range constraint computed: " << constr 
@@ -227,65 +228,65 @@ Node FPToReal::translateWithChildren(
 
   // The translation of the original node is determined by the kind of
   // the node.
-  kind::Kind_t newKind;
+  Kind newKind;
   switch (original.getKind())
   {
-    //case kind::FLOATINGPOINT_IS_NORMAL:
-    //  newKind = kind::RFP_IS_NORMAL; 
+    //case Kind::FLOATINGPOINT_IS_NORMAL:
+    //  newKind = Kind::RFP_IS_NORMAL; 
     //  break;
-    //case kind::FLOATINGPOINT_IS_SUBNORMAL:
-    //  newKind = kind::RFP_IS_SUBNORMAL;
+    //case Kind::FLOATINGPOINT_IS_SUBNORMAL:
+    //  newKind = Kind::RFP_IS_SUBNORMAL;
     //  break;
-    //case kind::FLOATINGPOINT_IS_ZERO:
-    //  newKind = kind::RFP_IS_ZERO; 
+    //case Kind::FLOATINGPOINT_IS_ZERO:
+    //  newKind = Kind::RFP_IS_ZERO; 
     //  break;
-    //case kind::FLOATINGPOINT_IS_INF:
-    //  newKind = kind::RFP_IS_INF; 
+    //case Kind::FLOATINGPOINT_IS_INF:
+    //  newKind = Kind::RFP_IS_INF; 
     //  break;
-    //case kind::FLOATINGPOINT_IS_NAN:
-    //  newKind = kind::RFP_IS_NAN; 
+    //case Kind::FLOATINGPOINT_IS_NAN:
+    //  newKind = Kind::RFP_IS_NAN; 
     //  break;
-    //case kind::FLOATINGPOINT_IS_NEG:
-    //  newKind = kind::RFP_IS_NEG; 
+    //case Kind::FLOATINGPOINT_IS_NEG:
+    //  newKind = Kind::RFP_IS_NEG; 
     //  break;
-    //case kind::FLOATINGPOINT_IS_POS:
-    //  newKind = kind::RFP_IS_POS; 
+    //case Kind::FLOATINGPOINT_IS_POS:
+    //  newKind = Kind::RFP_IS_POS; 
     //  break;
-    case kind::FLOATINGPOINT_TO_FP_FROM_FP:
-      newKind = kind::RFP_TO_RFP_FROM_RFP; 
+    case Kind::FLOATINGPOINT_TO_FP_FROM_FP:
+      newKind = Kind::RFP_TO_RFP_FROM_RFP; 
       break;
-    case kind::FLOATINGPOINT_TO_FP_FROM_REAL:
-      newKind = kind::RFP_ROUND; 
+    case Kind::FLOATINGPOINT_TO_FP_FROM_REAL:
+      newKind = Kind::RFP_ROUND; 
       break;
-    case kind::FLOATINGPOINT_ADD:
-      newKind = kind::RFP_ADD; 
+    case Kind::FLOATINGPOINT_ADD:
+      newKind = Kind::RFP_ADD; 
       break;
-    case kind::FLOATINGPOINT_SUB:
-      newKind = kind::RFP_SUB; 
+    case Kind::FLOATINGPOINT_SUB:
+      newKind = Kind::RFP_SUB; 
       break;
-    case kind::FLOATINGPOINT_NEG:
-      newKind = kind::RFP_NEG; 
+    case Kind::FLOATINGPOINT_NEG:
+      newKind = Kind::RFP_NEG; 
       break;
-    case kind::FLOATINGPOINT_MULT:
-      newKind = kind::RFP_MULT; 
+    case Kind::FLOATINGPOINT_MULT:
+      newKind = Kind::RFP_MULT; 
       break;
-    case kind::FLOATINGPOINT_DIV:
-      newKind = kind::RFP_DIV; 
+    case Kind::FLOATINGPOINT_DIV:
+      newKind = Kind::RFP_DIV; 
       break;
-    case kind::FLOATINGPOINT_EQ:
-      newKind = kind::RFP_EQ; 
+    case Kind::FLOATINGPOINT_EQ:
+      newKind = Kind::RFP_EQ; 
       break;
-    case kind::FLOATINGPOINT_LT:
-      newKind = kind::RFP_LT; 
+    case Kind::FLOATINGPOINT_LT:
+      newKind = Kind::RFP_LT; 
       break;
-    case kind::FLOATINGPOINT_LEQ:
-      newKind = kind::RFP_LEQ; 
+    case Kind::FLOATINGPOINT_LEQ:
+      newKind = Kind::RFP_LEQ; 
       break;
-    case kind::FLOATINGPOINT_GT:
-      newKind = kind::RFP_GT; 
+    case Kind::FLOATINGPOINT_GT:
+      newKind = Kind::RFP_GT; 
       break;
-    case kind::FLOATINGPOINT_GEQ:
-      newKind = kind::RFP_GEQ; 
+    case Kind::FLOATINGPOINT_GEQ:
+      newKind = Kind::RFP_GEQ; 
       break;
     default:
       newKind = original.getKind();
@@ -309,13 +310,13 @@ Node FPToReal::translateWithChildren(
   // Translate according to the kind of the original node.
   switch (newKind)
   {
-    case kind::FLOATINGPOINT_IS_NORMAL:
-    case kind::FLOATINGPOINT_IS_SUBNORMAL:
-    case kind::FLOATINGPOINT_IS_ZERO:
-    case kind::FLOATINGPOINT_IS_INF:
-    case kind::FLOATINGPOINT_IS_NAN:
-    case kind::FLOATINGPOINT_IS_NEG:
-    case kind::FLOATINGPOINT_IS_POS:
+    case Kind::FLOATINGPOINT_IS_NORMAL:
+    case Kind::FLOATINGPOINT_IS_SUBNORMAL:
+    case Kind::FLOATINGPOINT_IS_ZERO:
+    case Kind::FLOATINGPOINT_IS_INF:
+    case Kind::FLOATINGPOINT_IS_NAN:
+    case Kind::FLOATINGPOINT_IS_NEG:
+    case Kind::FLOATINGPOINT_IS_POS:
     {
       Assert(original.getNumChildren() == 1);
       uint32_t eb = original[0].getType().getFloatingPointExponentSize();
@@ -323,17 +324,30 @@ Node FPToReal::translateWithChildren(
       returnNode = createPropertyNode(newKind, eb, sb, translated_children[0]);
       break;
     }
-    case kind::FLOATINGPOINT_TO_REAL:
-    case kind::FLOATINGPOINT_TO_REAL_TOTAL:
+    case Kind::FLOATINGPOINT_TO_REAL:
+    //case Kind::FLOATINGPOINT_TO_REAL_TOTAL:
     {
       Assert(original.getNumChildren() == 1);
       uint32_t eb = original[0].getType().getFloatingPointExponentSize();
       uint32_t sb = original[0].getType().getFloatingPointSignificandSize();
       Node op = d_nm->mkConst(RfpToReal(eb, sb));
-      returnNode = d_nm->mkNode(kind::RFP_TO_REAL, op, translated_children[0]);
+      //returnNode = d_nm->mkNode(Kind::RFP_TO_REAL, op, translated_children[0]);
+
+      // TODO
+      Node n = d_nm->mkNode(Kind::RFP_TO_REAL, op, translated_children[0]);
+      Node isFinite = mkIsFinite(eb,sb, translated_children[0]);
+
+      std::stringstream ss;
+      ss << original;
+      Node v = d_nm->getSkolemManager()->mkDummySkolem(ss.str() + "_v",
+                                                       d_nm->realType());
+      d_toRealCache.push_back(std::pair(translated_children[0], v));
+
+      returnNode = isFinite.iteNode(n, v);
+
       break;
     }
-    case kind::RFP_TO_RFP_FROM_RFP:
+    case Kind::RFP_TO_RFP_FROM_RFP:
     {
       Assert(original.getNumChildren() == 2);
       uint32_t eb0 = original[1].getType().getFloatingPointExponentSize();
@@ -344,7 +358,7 @@ Node FPToReal::translateWithChildren(
       returnNode = d_nm->mkNode(newKind, op, translated_children[0], translated_children[1]);
       break;
     }
-    case kind::RFP_ROUND:
+    case Kind::RFP_ROUND:
     {
       Assert(original.getNumChildren() == 2);
       uint32_t eb = original.getType().getFloatingPointExponentSize();
@@ -353,7 +367,7 @@ Node FPToReal::translateWithChildren(
       returnNode = d_nm->mkNode(newKind, op, translated_children[0], translated_children[1]);
       break;
     }
-    case kind::RFP_NEG:
+    case Kind::RFP_NEG:
     {
       Assert(original.getNumChildren() == 1);
       uint32_t eb = original.getType().getFloatingPointExponentSize();
@@ -362,10 +376,10 @@ Node FPToReal::translateWithChildren(
       returnNode = d_nm->mkNode(newKind, op, translated_children[0]);
       break;
     }
-    case kind::RFP_ADD:
-    case kind::RFP_SUB:
-    case kind::RFP_MULT:
-    case kind::RFP_DIV:
+    case Kind::RFP_ADD:
+    case Kind::RFP_SUB:
+    case Kind::RFP_MULT:
+    case Kind::RFP_DIV:
     {
       Assert(original.getNumChildren() == 3);
       uint32_t eb = original.getType().getFloatingPointExponentSize();
@@ -375,13 +389,13 @@ Node FPToReal::translateWithChildren(
         translated_children[1], translated_children[2]);
       break;
     }
-    //case kind::RFP_IS_NORMAL:
-    //case kind::RFP_IS_SUBNORMAL:
-    //case kind::RFP_IS_ZERO:
-    //case kind::RFP_IS_INF:
-    //case kind::RFP_IS_NAN:
-    //case kind::RFP_IS_NEG:
-    //case kind::RFP_IS_POS:
+    //case Kind::RFP_IS_NORMAL:
+    //case Kind::RFP_IS_SUBNORMAL:
+    //case Kind::RFP_IS_ZERO:
+    //case Kind::RFP_IS_INF:
+    //case Kind::RFP_IS_NAN:
+    //case Kind::RFP_IS_NEG:
+    //case Kind::RFP_IS_POS:
     //{
     //  Assert(original.getNumChildren() == 1);
     //  uint32_t eb = original[0].getType().getFloatingPointExponentSize();
@@ -390,18 +404,29 @@ Node FPToReal::translateWithChildren(
     //  returnNode = d_nm->mkNode(newKind, op, translated_children[0]);
     //  break;
     //}
-    case kind::RFP_EQ:
-    case kind::RFP_LT:
-    case kind::RFP_LEQ:
-    case kind::RFP_GT:
-    case kind::RFP_GEQ:
+    case Kind::RFP_EQ:
+    case Kind::RFP_LT:
+    case Kind::RFP_LEQ:
+    case Kind::RFP_GT:
+    case Kind::RFP_GEQ:
     {
       Assert(original.getNumChildren() == 2);
       uint32_t eb = original[0].getType().getFloatingPointExponentSize();
       uint32_t sb = original[0].getType().getFloatingPointSignificandSize();
+
+      Node n1, n2;
+      if (newKind == Kind::RFP_LT || newKind == Kind::RFP_LEQ){
+        if (newKind == Kind::RFP_LT) newKind = Kind::RFP_GT;
+        else if (newKind == Kind::RFP_LEQ) newKind = Kind::RFP_GEQ;
+        n1 = translated_children[1];
+        n2 = translated_children[0];
+      }else{
+        n1 = translated_children[0];
+        n2 = translated_children[1];
+      }
+
       Node op = createFPOperator(newKind, eb, sb);
-      Node rel = d_nm->mkNode(newKind, op, 
-        translated_children[0], translated_children[1]);
+      Node rel = d_nm->mkNode(newKind, op, n1, n2);
 
       //returnNode = mkTrue(rel);
       returnNode = mkIsOne(rel);
@@ -411,9 +436,9 @@ Node FPToReal::translateWithChildren(
 
       break;
     }
-    case kind::EQUAL:
+    case Kind::EQUAL:
     {
-      returnNode = d_nm->mkNode(kind::EQUAL, translated_children);
+      returnNode = d_nm->mkNode(Kind::EQUAL, translated_children);
       break;
     }
     case Kind::ITE:
@@ -471,7 +496,7 @@ Node FPToReal::translateNoChildren(Node original,
     if (original.getType().isFloatingPoint())
     {
       // For fp variables, we create fresh real variables.
-      if (original.getKind() == kind::BOUND_VARIABLE)
+      if (original.getKind() == Kind::BOUND_VARIABLE)
       {
         // Range constraints for the bound real variables are not added now.
         // they will be added once the quantifier itself is handled.
@@ -508,7 +533,7 @@ Node FPToReal::translateNoChildren(Node original,
     else if (original.getType().isRoundingMode())
     {
       // For rm variables, we create fresh int variables.
-      if (original.getKind() == kind::BOUND_VARIABLE)
+      if (original.getKind() == Kind::BOUND_VARIABLE)
       {
         // Range constraints for the bound integer variables are not added now.
         // they will be added once the quantifier itself is handled.
@@ -539,12 +564,13 @@ Node FPToReal::translateNoChildren(Node original,
         }
       }
     }
-    //// TODO
-    //else if (original.getType().isFunction())
-    //{
-    //  // translate function symbol
-    //  translation = translateFunctionSymbol(original, skolems);
-    //}
+    // TODO
+    else if (original.getType().isFunction())
+    {
+      //// translate function symbol
+      //translation = translateFunctionSymbol(original, skolems);
+      Assert(false);
+    }
     else
     {
       // leave other variables intact
@@ -554,7 +580,7 @@ Node FPToReal::translateNoChildren(Node original,
   else // Constants.
   {
     // original is a constant (value) or an operator with no arguments (e.g., PI)
-    if (original.getKind() == kind::CONST_FLOATINGPOINT)
+    if (original.getKind() == Kind::CONST_FLOATINGPOINT)
     {
       // Floating-point constants are transformed into their real value.
       FloatingPoint constant(original.getConst<FloatingPoint>());
@@ -562,7 +588,7 @@ Node FPToReal::translateNoChildren(Node original,
       Rational r = RFP::convertFPToReal(constant);
       translation = d_nm->mkConstReal(r);
     }
-    else if (original.getKind() == kind::CONST_ROUNDINGMODE)
+    else if (original.getKind() == Kind::CONST_ROUNDINGMODE)
     {
       // Roung-mode constants are transformed into their int value.
       RoundingMode constant(original.getConst<RoundingMode>());
@@ -599,29 +625,29 @@ Node FPToReal::castToType(Node n, TypeNode tn)
     // Casting reals to FP numbers.
     Assert(tn.isFloatingPoint());
     Node op = d_nm->mkConst(RfpToFP(tn.getConst<FloatingPointSize>()));
-    return d_nm->mkNode(kind::RFP_TO_FP, op, n);
+    return d_nm->mkNode(Kind::RFP_TO_FP, op, n);
     //Node op = d_nm->mkConst(FloatingPointToFPReal(tn.getConst<FloatingPointSize>()));
     //Node rm = d_nm->mkConst(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
-    //return d_nm->mkNode(kind::FLOATINGPOINT_TO_FP_FROM_REAL, op, rm, n);
+    //return d_nm->mkNode(Kind::FLOATINGPOINT_TO_FP_FROM_REAL, op, rm, n);
   }
   else if (n.getType().isFloatingPoint())
   {
     // Casting FP numbers to reals.
     Assert(tn.isReal());
-    return d_nm->mkNode(kind::FP_TO_RFP, n);
+    return d_nm->mkNode(Kind::FP_TO_RFP, n);
   }
   else if (n.getType().isInteger())
   {
     // Casting integers to RMs.
     Assert(tn.isRoundingMode());
-    return d_nm->mkNode(kind::IRM_TO_RM, n);
+    return d_nm->mkNode(Kind::IRM_TO_RM, n);
   }
   else
   {
     // Casting RMs to integers.
     Assert(n.getType().isRoundingMode());
     Assert(tn.isInteger());
-    return d_nm->mkNode(kind::IRM_TO_INT, n);
+    return d_nm->mkNode(Kind::IRM_TO_INT, n);
   }
 }
 
@@ -631,8 +657,8 @@ Node FPToReal::reconstructNode(Node originalNode,
 {
   // first, we adjust the children of the node as needed.
   // re-construct the term with the adjusted children.
-  kind::Kind_t oldKind = originalNode.getKind();
-  NodeBuilder builder(oldKind);
+  Kind oldKind = originalNode.getKind();
+  NodeBuilder builder(d_nm, oldKind);
   if (originalNode.getMetaKind() == kind::metakind::PARAMETERIZED)
   {
     builder << originalNode.getOperator();
@@ -650,79 +676,93 @@ Node FPToReal::reconstructNode(Node originalNode,
   return reconstruction;
 }
 
-Node FPToReal::createPropertyNode(kind::Kind_t pKind, uint32_t eb, uint32_t sb, TNode node)
+Node FPToReal::createPropertyNode(Kind pKind, uint32_t eb, uint32_t sb, TNode node)
 {
   switch (pKind)
   {
-    case kind::FLOATINGPOINT_IS_NORMAL:
+    case Kind::FLOATINGPOINT_IS_NORMAL:
       return mkIsNormal(eb,sb, node);
-    case kind::FLOATINGPOINT_IS_SUBNORMAL:
+    case Kind::FLOATINGPOINT_IS_SUBNORMAL:
       return mkIsSubnormal(eb,sb, node);
-    case kind::FLOATINGPOINT_IS_ZERO:
+    case Kind::FLOATINGPOINT_IS_ZERO:
       return mkIsZero(eb,sb, node);
-    case kind::FLOATINGPOINT_IS_INF:
+    case Kind::FLOATINGPOINT_IS_INF:
       return mkIsInf(eb,sb, node);
-    case kind::FLOATINGPOINT_IS_NAN:
+    case Kind::FLOATINGPOINT_IS_NAN:
       return mkIsNan(eb,sb, node);
-    case kind::FLOATINGPOINT_IS_NEG:
-      return mkIsNeg(eb,sb, node);
-    case kind::FLOATINGPOINT_IS_POS:
-      return mkIsPos(eb,sb, node);
+    case Kind::FLOATINGPOINT_IS_NEG: 
+    {
+      Node isNotNan = mkIsNan(eb,sb, node).notNode();
+      Node isNeg = d_nm->mkNode(Kind::LT, node, d_nm->mkConstReal(Rational(0)));
+      return isNotNan.andNode(isNeg);
+      //return mkIsNeg(eb,sb, node);
+    }
+    case Kind::FLOATINGPOINT_IS_POS:
+    {
+      Node isNotNan = mkIsNan(eb,sb, node).notNode();
+      Node isPos = d_nm->mkNode(Kind::GEQ, node, d_nm->mkConstReal(Rational(0)));
+      return isNotNan.andNode(isPos);
+      //return mkIsPos(eb,sb, node);
+    }
+    default:
+      Unreachable();
   }
+  return Node::null();
 }
 
-Node FPToReal::createFPOperator(kind::Kind_t rfpKind, uint32_t eb, uint32_t sb)
+Node FPToReal::createFPOperator(Kind rfpKind, uint32_t eb, uint32_t sb)
 {
   switch (rfpKind)
   {
-    case kind::RFP_TO_REAL:
+    case Kind::RFP_TO_REAL:
       return d_nm->mkConst(RfpToReal(eb, sb));
-    case kind::RFP_IS_NORMAL:
+    case Kind::RFP_IS_NORMAL:
       return d_nm->mkConst(RfpIsNormal(eb, sb));
-    case kind::RFP_IS_SUBNORMAL:
+    case Kind::RFP_IS_SUBNORMAL:
       return d_nm->mkConst(RfpIsSubnormal(eb, sb));
-    case kind::RFP_IS_ZERO:
+    case Kind::RFP_IS_ZERO:
       return d_nm->mkConst(RfpIsZero(eb, sb));
-    case kind::RFP_IS_INF:
+    case Kind::RFP_IS_INF:
       return d_nm->mkConst(RfpIsInf(eb, sb));
-    case kind::RFP_IS_NAN:
+    case Kind::RFP_IS_NAN:
       return d_nm->mkConst(RfpIsNan(eb, sb));
-    case kind::RFP_IS_NEG:
+    case Kind::RFP_IS_NEG:
       return d_nm->mkConst(RfpIsNeg(eb, sb));
-    case kind::RFP_IS_POS:
+    case Kind::RFP_IS_POS:
       return d_nm->mkConst(RfpIsPos(eb, sb));
-    case kind::RFP_ROUND:
+    case Kind::RFP_ROUND:
       return d_nm->mkConst(RfpRound(eb, sb));
-    case kind::RFP_ADD:
+    case Kind::RFP_ADD:
       return d_nm->mkConst(RfpAdd(eb, sb));
-    case kind::RFP_SUB:
+    case Kind::RFP_SUB:
       return d_nm->mkConst(RfpSub(eb, sb));
-    case kind::RFP_NEG:
+    case Kind::RFP_NEG:
       return d_nm->mkConst(RfpNeg(eb, sb));
-    case kind::RFP_MULT:
+    case Kind::RFP_MULT:
       return d_nm->mkConst(RfpMult(eb, sb));
-    case kind::RFP_DIV:
+    case Kind::RFP_DIV:
       return d_nm->mkConst(RfpDiv(eb, sb));
-    case kind::RFP_EQ:
+    case Kind::RFP_EQ:
       return d_nm->mkConst(RfpEq(eb, sb));
-    case kind::RFP_LT:
+    case Kind::RFP_LT:
       return d_nm->mkConst(RfpLt(eb, sb));
-    case kind::RFP_LEQ:
+    case Kind::RFP_LEQ:
       return d_nm->mkConst(RfpLeq(eb, sb));
-    case kind::RFP_GT:
+    case Kind::RFP_GT:
       return d_nm->mkConst(RfpGt(eb, sb));
-    case kind::RFP_GEQ:
+    case Kind::RFP_GEQ:
       return d_nm->mkConst(RfpGeq(eb, sb));
     default:
-      Assert(false);
+      Unreachable();
   }
+  return Node::null();
 }
 
 void FPToReal::addFinalizeAssertions(
     AssertionPipeline* assertionsToPreprocess,
     const std::vector<Node>& additionalConstraints)
 {
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = nodeManager();
   Node lemmas = nm->mkAnd(additionalConstraints);
   assertionsToPreprocess->push_back(lemmas);
   Trace("fp-to-real-debug") << "range constraints: " << lemmas.toString()

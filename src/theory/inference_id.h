@@ -190,6 +190,33 @@ enum class InferenceId
   ARITH_NL_POW2_DIV0_CASE_REFINE,
   // lower bound refinements (Pow2Solver::checkFullRefine)
   ARITH_NL_POW2_LOWER_BOUND_CASE_REFINE,
+  //-------------------- rfp solver
+  ARITH_NL_RFP_INIT_REFINE,
+  ARITH_NL_RFP_MULT_I,
+  ARITH_NL_RFP_COMP_I,
+  ARITH_NL_RFP_AUX_REFINE,
+  ARITH_NL_RFP_MULT_AUX,
+  ARITH_NL_RFP_COMP_AUX,
+  ARITH_NL_RFP_VALUE_REFINE,
+  ARITH_NL_RFP_MULT_V,
+  ARITH_NL_RFP_COMP_V,
+  //-------------------- rfp.round solver
+  ARITH_NL_RFP_ROUND_INIT_REFINE,
+  ARITH_NL_RFP_ROUND_BOUND,
+  ARITH_NL_RFP_ROUND_SIGN,
+  ARITH_NL_RFP_ROUND_PRUNE,
+  ARITH_NL_RFP_ROUND_MONOTONE_REFINE,
+  ARITH_NL_RFP_ROUND_INTERVAL_REFINE,
+  ARITH_NL_RFP_ROUND_VALUE_REFINE,
+  //-------------------- rfp.to_real solver
+  ARITH_NL_RFP_TR_INIT_REFINE,
+  ARITH_NL_RFP_TR_VALUE_REFINE,
+  //-------------------- rfp.add solver
+  ARITH_NL_RFP_ADD_INIT_REFINE,
+  ARITH_NL_RFP_ADD_AUX_REFINE,
+  ARITH_NL_RFP_ADD_VALUE_REFINE,
+  //-------------------- rfp.mult solver
+  ARITH_NL_RFP_MULT_COMP,
   //-------------------- nonlinear coverings solver
   // conflict / infeasible subset obtained from coverings
   ARITH_NL_COVERING_CONFLICT,

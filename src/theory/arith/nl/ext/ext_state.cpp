@@ -129,7 +129,7 @@ CDProof* ExtState::getProof()
 // for rfp
 void ExtState::checkRfpComp(Kind type, Node lhs, Node rhs, bool doWait)
 {
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = lhs.getNodeManager();
 
   Node lit = nm->mkNode(type, lhs, rhs);
   lit = rewrite(lit);

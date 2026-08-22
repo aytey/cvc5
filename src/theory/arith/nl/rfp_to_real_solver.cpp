@@ -58,7 +58,7 @@ bool RfpToRealSolver::isTarget(const Node& n)
 void RfpToRealSolver::checkInitialRefineToReal(Node node) 
 {
   Trace("rfp-to-real") << "RFP_TO_REAL term (init): " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpToReal>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -95,7 +95,7 @@ void RfpToRealSolver::checkInitialRefineToReal(Node node)
 void RfpToRealSolver::checkAuxRefineToReal(Node node) 
 {
   Trace("rfp-to-real") << "RFP_TO_REAL term: " << node << std::endl;
-  //NodeManager* nm = NodeManager::currentNM();
+  //NodeManager* nm = node.getNodeManager();
   //FloatingPointSize sz = node.getOperator().getConst<RfpToReal>().getSize();
   //uint32_t eb = sz.exponentWidth();
   //uint32_t sb = sz.significandWidth();

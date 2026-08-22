@@ -126,8 +126,7 @@ class Integer
 
   static Integer pow2(uint32_t pow)
   {
-    // TODO
-    return Integer(0);
+    return Integer(1).multiplyByPow2(pow);
   }
 
   /** Return true if bit at index 'i' is 1, and false otherwise. */

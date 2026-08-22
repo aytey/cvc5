@@ -147,6 +147,8 @@ const static std::unordered_map<Kind, std::pair<internal::Kind, std::string>>
         KIND_ENUM(Kind::PIAND, internal::Kind::PIAND),
         KIND_ENUM(Kind::POW2, internal::Kind::POW2),
         KIND_ENUM(Kind::LOG2, internal::Kind::INTS_LOG2),
+        KIND_ENUM(Kind::RFP_ROUND, internal::Kind::RFP_ROUND),
+        KIND_ENUM(Kind::RFP_ADD, internal::Kind::RFP_ADD),
         KIND_ENUM(Kind::SUB, internal::Kind::SUB),
         KIND_ENUM(Kind::NEG, internal::Kind::NEG),
         KIND_ENUM(Kind::DIVISION, internal::Kind::DIVISION),
@@ -546,6 +548,8 @@ const static std::unordered_map<internal::Kind,
         {internal::Kind::PIAND, Kind::PIAND},
         {internal::Kind::POW2, Kind::POW2},
         {internal::Kind::INTS_LOG2, Kind::LOG2},
+        {internal::Kind::RFP_ROUND, Kind::RFP_ROUND},
+        {internal::Kind::RFP_ADD, Kind::RFP_ADD},
         {internal::Kind::SUB, Kind::SUB},
         {internal::Kind::NEG, Kind::NEG},
         {internal::Kind::DIVISION, Kind::DIVISION},
@@ -2342,14 +2346,18 @@ Term Op::getIndexHelper(size_t index)
     }
     case Kind::RFP_ROUND:
     {
-      t = Solver::mkRationalValHelper(
-          d_nm, (size_t)d_node->getConst<internal::RfpRound>(), true);
+      internal::FloatingPointSize size =
+          d_node->getConst<internal::RfpRound>().getSize();
+      t = TermManager::mkRationalValHelper(
+          d_nm, index == 0 ? size.exponentWidth() : size.significandWidth(), true);
       break;
     }
     case Kind::RFP_ADD:
     {
-      t = Solver::mkRationalValHelper(
-          d_nm, (size_t)d_node->getConst<internal::RfpAdd>(), true);
+      internal::FloatingPointSize size =
+          d_node->getConst<internal::RfpAdd>().getSize();
+      t = TermManager::mkRationalValHelper(
+          d_nm, index == 0 ? size.exponentWidth() : size.significandWidth(), true);
       break;
     }
     case Kind::FLOATINGPOINT_TO_UBV:

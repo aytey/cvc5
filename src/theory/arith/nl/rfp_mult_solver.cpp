@@ -83,7 +83,7 @@ bool RfpMultSolver::isTarget(const Node& n)
 
 void RfpMultSolver::checkInitialRefineMult(Node node) 
 {
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpMult>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -232,7 +232,7 @@ void RfpMultSolver::checkInitialRefineMult(Node node)
 void RfpMultSolver::checkAuxRefineMult(Node node)
 {
   Trace("rfp-mult") << "RFP_MULT term: " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpMult>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -571,7 +571,7 @@ void RfpMultSolver::checkAuxRefineMult(Node node)
 //void RfpMultSolver::checkValueRefineMult(Node node)
 //{
 //  Trace("rfp-mult") << "RFP_MULT term: " << node << std::endl;
-//  //NodeManager* nm = NodeManager::currentNM();
+//  //NodeManager* nm = node.getNodeManager();
 //  FloatingPointSize sz = node.getOperator().getConst<RfpMult>().getSize();
 //  uint32_t eb = sz.exponentWidth();
 //  uint32_t sb = sz.significandWidth();
@@ -615,7 +615,7 @@ void RfpMultSolver::checkAuxRefineMult(Node node)
 // RfpDiv
 
 void RfpMultSolver::checkInitialRefineDiv(Node node) {
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpDiv>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -741,7 +741,7 @@ void RfpMultSolver::checkInitialRefineDiv(Node node) {
 void RfpMultSolver::checkAuxRefineDiv(Node node)
 {
   Trace("rfp-div") << "RFP_DIV term: " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpDiv>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();

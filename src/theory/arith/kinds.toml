@@ -407,3 +407,363 @@ name     = "PIAND"
 children = 3
 comment  = "parametric integer version of AND operator"
 typerule = "SimpleTypeRule<RInteger, AInteger, AInteger, AInteger>"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_IS_NORMAL_OP"
+class_key = "class"
+cpp_type  = "RfpIsNormal"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpIsNormal >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.isNormal"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_IS_NORMAL"
+K2       = "RFP_IS_NORMAL_OP"
+children = 1
+comment  = "real version of fp.isNormal; first parameter is an RFP_IS_NORMAL_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpPropTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_IS_SUBNORMAL_OP"
+class_key = "class"
+cpp_type  = "RfpIsSubnormal"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpIsSubnormal >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.isSubnormal"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_IS_SUBNORMAL"
+K2       = "RFP_IS_SUBNORMAL_OP"
+children = 1
+comment  = "real version of fp.isSubnormal; first parameter is an RFP_IS_SUBNORMAL_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpPropTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_IS_ZERO_OP"
+class_key = "class"
+cpp_type  = "RfpIsZero"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpIsZero >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.isZero"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_IS_ZERO"
+K2       = "RFP_IS_ZERO_OP"
+children = 1
+comment  = "real version of fp.isZero; first parameter is an RFP_IS_ZERO_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpPropTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_IS_INF_OP"
+class_key = "class"
+cpp_type  = "RfpIsInf"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpIsInf >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.isInfinite"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_IS_INF"
+K2       = "RFP_IS_INF_OP"
+children = 1
+comment  = "real version of fp.isInfinite; first parameter is an RFP_IS_INF_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpPropTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_IS_NAN_OP"
+class_key = "class"
+cpp_type  = "RfpIsNan"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpIsNan >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.isNaN"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_IS_NAN"
+K2       = "RFP_IS_NAN_OP"
+children = 1
+comment  = "real version of fp.isNaN; first parameter is an RFP_IS_NAN_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpPropTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_IS_NEG_OP"
+class_key = "class"
+cpp_type  = "RfpIsNeg"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpIsNeg >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.isNegative"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_IS_NEG"
+K2       = "RFP_IS_NEG_OP"
+children = 1
+comment  = "real version of fp.isNegative; first parameter is an RFP_IS_NEG_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpPropTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_IS_POS_OP"
+class_key = "class"
+cpp_type  = "RfpIsPos"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpIsPos >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.isPositive"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_IS_POS"
+K2       = "RFP_IS_POS_OP"
+children = 1
+comment  = "real version of fp.isPositive; first parameter is an RFP_IS_POS_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpPropTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_TO_RFP_FROM_RFP_OP"
+class_key = "class"
+cpp_type  = "RfpToRfpFromRfp"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpToRfpFromRfp >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of FP rounding operator; payload is an instance of the cvc5::internal::RfpToRfpFromRfp class"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_TO_RFP_FROM_RFP"
+K2       = "RFP_TO_RFP_FROM_RFP_OP"
+children = 2
+comment  = "real version of FP rounding operator; first parameter is an RFP_TO_RFP_FROM_RFP_OP, second is a rounding mode, and third is a real-representation of an FP term"
+typerule = "::cvc5::internal::theory::arith::RfpUnOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_TO_REAL_OP"
+class_key = "class"
+cpp_type  = "RfpToReal"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpToReal >"
+header    = "util/real_floatingpoint.h"
+comment   = "operator for rfp.to_real"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_TO_REAL"
+K2       = "RFP_TO_REAL_OP"
+children = 1
+comment  = "operator to convert RFP reals to reals; first parameter is an RFP_TO_REAL_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpToRealTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_ROUND_OP"
+class_key = "class"
+cpp_type  = "RfpRound"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpRound >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of FP rounding operator; payload is an instance of the cvc5::internal::RfpRound class"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_ROUND"
+K2       = "RFP_ROUND_OP"
+children = 2
+comment  = "real version of FP rounding operator; first parameter is an RFP_ROUND_OP, second is a rounding mode, and third is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpUnOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_ADD_OP"
+class_key = "class"
+cpp_type  = "RfpAdd"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpAdd >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.add"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_ADD"
+K2       = "RFP_ADD_OP"
+children = 3
+comment  = "real version of fp.add; first parameter is an RFP_ADD_OP, second is a rounding mode, and third and fourth are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpBinOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_SUB_OP"
+class_key = "class"
+cpp_type  = "RfpSub"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpSub >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.sub"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_SUB"
+K2       = "RFP_SUB_OP"
+children = 3
+comment  = "real version of fp.sub; first parameter is an RFP_SUB_OP, second is a rounding mode, and third and fourth are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpBinOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_NEG_OP"
+class_key = "class"
+cpp_type  = "RfpNeg"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpNeg >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.neg"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_NEG"
+K2       = "RFP_NEG_OP"
+children = 1
+comment  = "real version of fp.neg; first parameter is an RFP_NEG_OP, and second is a real term"
+typerule = "::cvc5::internal::theory::arith::RfpUnOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_MULT_OP"
+class_key = "class"
+cpp_type  = "RfpMult"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpMult >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.mul"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_MULT"
+K2       = "RFP_MULT_OP"
+children = 3
+comment  = "real version of fp.mul; first parameter is an RFP_MULT_OP, second is a rounding mode, and third and fourth are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpBinOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_DIV_OP"
+class_key = "class"
+cpp_type  = "RfpDiv"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpDiv >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.div"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_DIV"
+K2       = "RFP_DIV_OP"
+children = 3
+comment  = "real version of fp.div; first parameter is an RFP_DIV_OP, second is a rounding mode, and third and fourth are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpBinOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_EQ_OP"
+class_key = "class"
+cpp_type  = "RfpEq"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpEq >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.eq"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_EQ"
+K2       = "RFP_EQ_OP"
+children = 2
+comment  = "real version of fp.eq; first parameter is an RFP_EQ_OP, and second and third are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpRelOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_LT_OP"
+class_key = "class"
+cpp_type  = "RfpLt"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpLt >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.lt"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_LT"
+K2       = "RFP_LT_OP"
+children = 2
+comment  = "real version of fp.lt; first parameter is an RFP_LT_OP, and second and third are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpRelOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_LEQ_OP"
+class_key = "class"
+cpp_type  = "RfpLeq"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpLeq >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.leq"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_LEQ"
+K2       = "RFP_LEQ_OP"
+children = 2
+comment  = "real version of fp.leq; first parameter is an RFP_LEQ_OP, and second and third are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpRelOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_GT_OP"
+class_key = "class"
+cpp_type  = "RfpGt"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpGt >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.gt"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_GT"
+K2       = "RFP_GT_OP"
+children = 2
+comment  = "real version of fp.gt; first parameter is an RFP_GT_OP, and second and third are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpRelOpTypeRule"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_GEQ_OP"
+class_key = "class"
+cpp_type  = "RfpGeq"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpGeq >"
+header    = "util/real_floatingpoint.h"
+comment   = "real version of fp.geq"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_GEQ"
+K2       = "RFP_GEQ_OP"
+children = 2
+comment  = "real version of fp.geq; first parameter is an RFP_GEQ_OP, and second and third are real terms"
+typerule = "::cvc5::internal::theory::arith::RfpRelOpTypeRule"

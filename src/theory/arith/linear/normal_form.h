@@ -242,6 +242,19 @@ class Variable : public NodeWrapper
       case Kind::PIAND:
       case Kind::POW2:
       case Kind::INTS_LOG2:
+      case Kind::RFP_TO_RFP_FROM_RFP:
+      case Kind::RFP_TO_REAL:
+      case Kind::RFP_ROUND:
+      case Kind::RFP_ADD:
+      case Kind::RFP_SUB:
+      case Kind::RFP_NEG:
+      case Kind::RFP_MULT:
+      case Kind::RFP_DIV:
+      case Kind::RFP_EQ:
+      case Kind::RFP_LT:
+      case Kind::RFP_LEQ:
+      case Kind::RFP_GT:
+      case Kind::RFP_GEQ:
       case Kind::POW:
       case Kind::EXPONENTIAL:
       case Kind::SINE:

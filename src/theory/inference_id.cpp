@@ -125,6 +125,44 @@ const char* toString(InferenceId i)
       return "ARITH_NL_POW2_DIV0_CASE_REFINE";
     case InferenceId::ARITH_NL_POW2_LOWER_BOUND_CASE_REFINE:
       return "ARITH_NL_POW2_LOWER_BOUND_CASE_REFINE";
+    case InferenceId::ARITH_NL_RFP_ROUND_INIT_REFINE:
+      return "ARITH_NL_RFP_ROUND_INIT_REFINE";
+    case InferenceId::ARITH_NL_RFP_ROUND_BOUND:
+      return "ARITH_NL_RFP_ROUND_BOUND";
+    case InferenceId::ARITH_NL_RFP_ROUND_SIGN:
+      return "ARITH_NL_RFP_ROUND_SIGN";
+    case InferenceId::ARITH_NL_RFP_ROUND_PRUNE:
+      return "ARITH_NL_RFP_ROUND_PRUNE";
+    case InferenceId::ARITH_NL_RFP_ROUND_MONOTONE_REFINE:
+      return "ARITH_NL_RFP_ROUND_MONOTONE_REFINE";
+    case InferenceId::ARITH_NL_RFP_ROUND_INTERVAL_REFINE:
+      return "ARITH_NL_RFP_ROUND_INTERVAL_REFINE";
+    case InferenceId::ARITH_NL_RFP_ROUND_VALUE_REFINE:
+      return "ARITH_NL_RFP_ROUND_VALUE_REFINE";
+    case InferenceId::ARITH_NL_RFP_INIT_REFINE:
+    case InferenceId::ARITH_NL_RFP_MULT_I:
+    case InferenceId::ARITH_NL_RFP_COMP_I:
+      return "ARITH_NL_RFP_INIT_REFINE";
+    case InferenceId::ARITH_NL_RFP_AUX_REFINE:
+    case InferenceId::ARITH_NL_RFP_MULT_AUX:
+    case InferenceId::ARITH_NL_RFP_COMP_AUX:
+      return "ARITH_NL_RFP_AUX_REFINE";
+    case InferenceId::ARITH_NL_RFP_VALUE_REFINE:
+    case InferenceId::ARITH_NL_RFP_MULT_V:
+    case InferenceId::ARITH_NL_RFP_COMP_V:
+      return "ARITH_NL_RFP_VALUE_REFINE";
+    case InferenceId::ARITH_NL_RFP_TR_INIT_REFINE:
+      return "ARITH_NL_RFP_TR_INIT_REFINE";
+    case InferenceId::ARITH_NL_RFP_TR_VALUE_REFINE:
+      return "ARITH_NL_RFP_TR_VALUE_REFINE";
+    case InferenceId::ARITH_NL_RFP_ADD_INIT_REFINE:
+      return "ARITH_NL_RFP_ADD_INIT_REFINE";
+    case InferenceId::ARITH_NL_RFP_ADD_AUX_REFINE:
+      return "ARITH_NL_RFP_ADD_AUX_REFINE";
+    case InferenceId::ARITH_NL_RFP_ADD_VALUE_REFINE:
+      return "ARITH_NL_RFP_ADD_VALUE_REFINE";
+    case InferenceId::ARITH_NL_RFP_MULT_COMP:
+      return "ARITH_NL_RFP_MULT_COMP";
     case InferenceId::ARITH_NL_COVERING_CONFLICT:
       return "ARITH_NL_COVERING_CONFLICT";
     case InferenceId::ARITH_NL_COVERING_EXCLUDED_INTERVAL:

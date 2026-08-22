@@ -271,6 +271,177 @@ TypeNode PowTypeRule::computeType(CVC5_UNUSED NodeManager* nodeManager,
   return t;
 }
 
+TypeNode RfpUnOpTypeRule::preComputeType(NodeManager* nm,
+                                         CVC5_UNUSED TNode n)
+{
+  return nm->realType();
+}
+
+TypeNode RfpUnOpTypeRule::computeType(NodeManager* nodeManager,
+                                      TNode n,
+                                      bool check,
+                                      std::ostream* errOut)
+{
+  Assert(n.getKind() == Kind::RFP_TO_RFP_FROM_RFP
+         || n.getKind() == Kind::RFP_ROUND || n.getKind() == Kind::RFP_NEG);
+  if (check)
+  {
+    size_t argIndex = 0;
+    if (n.getKind() == Kind::RFP_TO_RFP_FROM_RFP
+        || n.getKind() == Kind::RFP_ROUND)
+    {
+      TypeNode rm = n[0].getTypeOrNull();
+      if (!isMaybeInteger(rm))
+      {
+        if (errOut)
+        {
+          (*errOut) << "expecting an integer (irm) term";
+        }
+        return TypeNode::null();
+      }
+      argIndex = 1;
+    }
+    TypeNode arg = n[argIndex].getTypeOrNull();
+    if (!(arg.isReal() || arg.isFullyAbstract()))
+    {
+      if (errOut)
+      {
+        (*errOut) << "expecting a real term";
+      }
+      return TypeNode::null();
+    }
+  }
+  return nodeManager->realType();
+}
+
+TypeNode RfpBinOpTypeRule::preComputeType(NodeManager* nm,
+                                          CVC5_UNUSED TNode n)
+{
+  return nm->realType();
+}
+
+TypeNode RfpBinOpTypeRule::computeType(NodeManager* nodeManager,
+                                       TNode n,
+                                       bool check,
+                                       std::ostream* errOut)
+{
+  Assert(n.getKind() == Kind::RFP_ADD || n.getKind() == Kind::RFP_SUB
+         || n.getKind() == Kind::RFP_MULT || n.getKind() == Kind::RFP_DIV);
+  if (check)
+  {
+    TypeNode rm = n[0].getTypeOrNull();
+    TypeNode arg1 = n[1].getTypeOrNull();
+    TypeNode arg2 = n[2].getTypeOrNull();
+    if (!isMaybeInteger(rm))
+    {
+      if (errOut)
+      {
+        (*errOut) << "expecting an integer (irm) term";
+      }
+      return TypeNode::null();
+    }
+    if (!(arg1.isReal() || arg1.isFullyAbstract())
+        || !(arg2.isReal() || arg2.isFullyAbstract()))
+    {
+      if (errOut)
+      {
+        (*errOut) << "expecting real terms";
+      }
+      return TypeNode::null();
+    }
+  }
+  return nodeManager->realType();
+}
+
+TypeNode RfpToRealTypeRule::preComputeType(NodeManager* nm,
+                                           CVC5_UNUSED TNode n)
+{
+  return nm->realType();
+}
+
+TypeNode RfpToRealTypeRule::computeType(NodeManager* nodeManager,
+                                        TNode n,
+                                        bool check,
+                                        std::ostream* errOut)
+{
+  Assert(n.getKind() == Kind::RFP_TO_REAL);
+  if (check)
+  {
+    TypeNode arg = n[0].getTypeOrNull();
+    if (!(arg.isReal() || arg.isFullyAbstract()))
+    {
+      if (errOut)
+      {
+        (*errOut) << "expecting a real term";
+      }
+      return TypeNode::null();
+    }
+  }
+  return nodeManager->realType();
+}
+
+TypeNode RfpPropTypeRule::preComputeType(NodeManager* nm,
+                                         CVC5_UNUSED TNode n)
+{
+  return nm->booleanType();
+}
+
+TypeNode RfpPropTypeRule::computeType(NodeManager* nodeManager,
+                                      TNode n,
+                                      bool check,
+                                      std::ostream* errOut)
+{
+  Assert(n.getKind() == Kind::RFP_IS_NORMAL
+         || n.getKind() == Kind::RFP_IS_SUBNORMAL
+         || n.getKind() == Kind::RFP_IS_ZERO || n.getKind() == Kind::RFP_IS_INF
+         || n.getKind() == Kind::RFP_IS_NAN || n.getKind() == Kind::RFP_IS_NEG
+         || n.getKind() == Kind::RFP_IS_POS);
+  if (check)
+  {
+    TypeNode arg = n[0].getTypeOrNull();
+    if (!(arg.isReal() || arg.isFullyAbstract()))
+    {
+      if (errOut)
+      {
+        (*errOut) << "expecting a real term";
+      }
+      return TypeNode::null();
+    }
+  }
+  return nodeManager->booleanType();
+}
+
+TypeNode RfpRelOpTypeRule::preComputeType(NodeManager* nm,
+                                          CVC5_UNUSED TNode n)
+{
+  return nm->integerType();
+}
+
+TypeNode RfpRelOpTypeRule::computeType(NodeManager* nodeManager,
+                                       TNode n,
+                                       bool check,
+                                       std::ostream* errOut)
+{
+  Assert(n.getKind() == Kind::RFP_EQ || n.getKind() == Kind::RFP_LT
+         || n.getKind() == Kind::RFP_LEQ || n.getKind() == Kind::RFP_GT
+         || n.getKind() == Kind::RFP_GEQ);
+  if (check)
+  {
+    TypeNode arg1 = n[0].getTypeOrNull();
+    TypeNode arg2 = n[1].getTypeOrNull();
+    if (!(arg1.isReal() || arg1.isFullyAbstract())
+        || !(arg2.isReal() || arg2.isFullyAbstract()))
+    {
+      if (errOut)
+      {
+        (*errOut) << "expecting real terms";
+      }
+      return TypeNode::null();
+    }
+  }
+  return nodeManager->integerType();
+}
+
 TypeNode IndexedRootPredicateTypeRule::preComputeType(NodeManager* nm,
                                                       CVC5_UNUSED TNode n)
 {

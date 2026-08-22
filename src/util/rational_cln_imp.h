@@ -282,8 +282,23 @@ class Rational
   /** Logarithm with base 2. */
   int ilog2() const
   {
-    // TODO
-    return 0;
+    Integer num = getNumerator().abs();
+    Integer den = getDenominator().abs();
+    int l2Num = num.length();
+    int l2Den = den.length();
+    if (isZero())
+    {
+      return 0;
+    }
+    if (l2Num >= l2Den)
+    {
+      int res = l2Num - l2Den;
+      return Rational(num) / Integer::pow2(uint32_t(res)) >= den ? res
+                                                                 : res - 1;
+    }
+    int res = l2Den - l2Num;
+    return Rational(den) / Integer::pow2(uint32_t(res)) > num ? -res - 1
+                                                               : -res;
   }
 
  private:

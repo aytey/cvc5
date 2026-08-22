@@ -42,9 +42,9 @@ std::ostream& operator<<(std::ostream& os, InferStep step)
     case InferStep::POW2_INIT: return os << "POW2_INIT";
     case InferStep::POW2_FULL: return os << "POW2_FULL";
     case InferStep::POW2_INITIAL: return os << "POW2_INITIAL";
-    case InferStep::ILOG2_INIT: return os << "ILOG2_INIT";
-    case InferStep::ILOG2_FULL: return os << "ILOG2_FULL";
-    case InferStep::ILOG2_INITIAL: return os << "ILOG2_INITIAL";
+    //case InferStep::ILOG2_INIT: return os << "ILOG2_INIT";
+    //case InferStep::ILOG2_FULL: return os << "ILOG2_FULL";
+    //case InferStep::ILOG2_INITIAL: return os << "ILOG2_INITIAL";
     case InferStep::RFP_ROUND_INIT: return os << "RFP_ROUND_INIT";
     case InferStep::RFP_ROUND_INITIAL: return os << "RFP_ROUND_INITIAL";
     case InferStep::RFP_ROUND_AUX: return os << "RFP_ROUND_AUX";
@@ -161,24 +161,14 @@ void Strategy::initializeStrategy(const Options& options)
     }
     one << InferStep::TRANS_INITIAL << InferStep::BREAK;
   }
+  one << InferStep::RFP_TO_REAL_INIT;
+  one << InferStep::RFP_TO_REAL_INITIAL;
+  one << InferStep::RFP_ROUND_INIT;
+  one << InferStep::RFP_ROUND_INITIAL << InferStep::BREAK;
   one << InferStep::IAND_INIT;
   one << InferStep::IAND_INITIAL << InferStep::BREAK;
   one << InferStep::PIAND_INIT;
   one << InferStep::PIAND_INITIAL << InferStep::BREAK;
-  one << InferStep::POW2_INIT;
-  one << InferStep::POW2_INITIAL << InferStep::BREAK;
-  one << InferStep::ILOG2_INIT;
-  one << InferStep::ILOG2_INITIAL << InferStep::BREAK;
-  one << InferStep::RFP_ROUND_INIT;
-  one << InferStep::RFP_ROUND_INITIAL << InferStep::BREAK;
-  one << InferStep::RFP_INIT;
-  one << InferStep::RFP_INITIAL << InferStep::BREAK;
-  one << InferStep::RFP_ROUND_INIT;
-  one << InferStep::RFP_ROUND_INITIAL << InferStep::BREAK;
-  one << InferStep::IAND_INIT;
-  one << InferStep::IAND_INITIAL << InferStep::BREAK;
-  one << InferStep::ILOG2_INIT;
-  one << InferStep::ILOG2_INITIAL << InferStep::BREAK;
   one << InferStep::POW2_INIT;
   one << InferStep::POW2_INITIAL << InferStep::BREAK;
   if (options.arith.nlExt == options::NlExtMode::FULL
@@ -204,6 +194,17 @@ void Strategy::initializeStrategy(const Options& options)
     }
     one << InferStep::BREAK;
   }
+  one << InferStep::RFP_AUX;
+  one << InferStep::RFP_MULT_AUX;
+  one << InferStep::RFP_COMP_AUX << InferStep::BREAK;
+  one << InferStep::RFP_TO_REAL_AUX;
+  one << InferStep::RFP_ROUND_AUX << InferStep::BREAK;
+  one << InferStep::RFP_FULL << InferStep::BREAK;
+  one << InferStep::RFP_COMP_FULL << InferStep::BREAK;
+  one << InferStep::RFP_TO_REAL_FULL << InferStep::BREAK;
+  one << InferStep::RFP_ROUND_FULL << InferStep::BREAK;
+  one << InferStep::RFP_MULT_FULL << InferStep::BREAK;
+  one << InferStep::FLUSH_WAITING_LEMMAS << InferStep::BREAK;
   one << InferStep::IAND_FULL << InferStep::BREAK;
   one << InferStep::PIAND_FULL << InferStep::BREAK;
   one << InferStep::POW2_FULL << InferStep::BREAK;

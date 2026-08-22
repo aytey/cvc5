@@ -94,6 +94,57 @@ int Rational::absCmp(const Rational& q) const
   }
 }
 
+Rational Rational::pow2Lower() const
+{
+  size_t l2Num = getNumerator().length();
+  size_t l2Den = getDenominator().length();
+  Rational res;
+  if (l2Num == l2Den)
+  {
+    Assert(sgn() != 0);
+    res = abs() >= 1 ? Rational(1) : Rational(1, 2);
+  }
+  else if (l2Num > l2Den)
+  {
+    size_t e = l2Num - l2Den - 1;
+    mpq_class v;
+    mpq_mul_2exp(v.get_mpq_t(), mpq_class(1).get_mpq_t(), e);
+    for (res = v; res * 2 < abs(); res *= 2)
+    {
+    }
+  }
+  else
+  {
+    size_t e = l2Den - l2Num + 1;
+    mpq_class v;
+    mpq_div_2exp(v.get_mpq_t(), mpq_class(1).get_mpq_t(), e);
+    for (res = v; res * 2 < abs(); res *= 2)
+    {
+    }
+  }
+  return res;
+}
+
+int Rational::ilog2() const
+{
+  Integer num = getNumerator().abs();
+  Integer den = getDenominator().abs();
+  int l2Num = num.length();
+  int l2Den = den.length();
+  if (isZero())
+  {
+    return 0;
+  }
+  if (l2Num >= l2Den)
+  {
+    int res = l2Num - l2Den;
+    return Rational(num) / Integer::pow2(uint32_t(res)) >= den ? res
+                                                               : res - 1;
+  }
+  int res = l2Den - l2Num;
+  return Rational(den) / Integer::pow2(uint32_t(res)) > num ? -res - 1 : -res;
+}
+
 /** Return an exact rational for a double d. */
 std::optional<Rational> Rational::fromDouble(double d)
 {

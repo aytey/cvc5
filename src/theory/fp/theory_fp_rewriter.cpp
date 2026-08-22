@@ -37,7 +37,6 @@
 #include "theory/fp/fp_word_blaster.h"
 #include "theory/fp/theory_fp_utils.h"
 #include "util/floatingpoint.h"
-
 #include "util/real_floatingpoint.h"
 
 using namespace cvc5::internal::kind;
@@ -1108,6 +1107,19 @@ RewriteResponse convertToRealTotal(NodeManager* nm,
   }
 }
 
+RewriteResponse convertFromRealFP(NodeManager* nm,
+                                  TNode node,
+                                  CVC5_UNUSED bool isPreRewrite)
+{
+  Assert(node.getKind() == Kind::RFP_TO_FP);
+  const FloatingPointSize& size =
+      node.getOperator().getConst<RfpToFP>().getSize();
+  Rational arg(node[0].getConst<Rational>());
+  Node ret = nm->mkConst(RealFloatingPoint::convertToFP(
+      size.exponentWidth(), size.significandWidth(), arg));
+  return RewriteResponse(REWRITE_DONE, ret);
+}
+
 RewriteResponse componentFlag(NodeManager* nm,
                               TNode node,
                               CVC5_UNUSED bool isPreRewrite)
@@ -1312,6 +1324,7 @@ TheoryFpRewriter::TheoryFpRewriter(NodeManager* nm, bool fpExp)
       rewrite::identity;
   d_preRewriteTable[static_cast<uint32_t>(Kind::FLOATINGPOINT_TO_REAL_TOTAL)] =
       rewrite::identity;
+  d_preRewriteTable[static_cast<uint32_t>(Kind::RFP_TO_FP)] = rewrite::identity;
 
   /******** Equality ********/
 
@@ -1435,6 +1448,8 @@ TheoryFpRewriter::TheoryFpRewriter(NodeManager* nm, bool fpExp)
   d_postRewriteTable[static_cast<uint32_t>(Kind::FLOATINGPOINT_TO_SBV_TOTAL)] =
       rewrite::identity;
   d_postRewriteTable[static_cast<uint32_t>(Kind::FLOATINGPOINT_TO_REAL_TOTAL)] =
+      rewrite::identity;
+  d_postRewriteTable[static_cast<uint32_t>(Kind::RFP_TO_FP)] =
       rewrite::identity;
 
   /******** Variables ********/
@@ -1562,6 +1577,8 @@ TheoryFpRewriter::TheoryFpRewriter(NodeManager* nm, bool fpExp)
       constantFold::convertToSBVTotal;
   d_constantFoldTable[static_cast<uint32_t>(
       Kind::FLOATINGPOINT_TO_REAL_TOTAL)] = constantFold::convertToRealTotal;
+  d_constantFoldTable[static_cast<uint32_t>(Kind::RFP_TO_FP)] =
+      constantFold::convertFromRealFP;
 
   /******** Variables ********/
   d_constantFoldTable[static_cast<uint32_t>(Kind::VARIABLE)] =

@@ -33,7 +33,7 @@
 #include "theory/arith/nl/nl_model.h"
 #include "theory/arith/nl/piand_solver.h"
 #include "theory/arith/nl/pow2_solver.h"
-#include "theory/arith/nl/ilog2_solver.h"
+//#include "theory/arith/nl/ilog2_solver.h"
 #include "theory/arith/nl/rfp_round_solver.h"
 #include "theory/arith/nl/rfp_solver.h"
 #include "theory/arith/nl/rfp_mult_solver.h"
@@ -276,12 +276,12 @@ class NonlinearExtension : EnvObj
    */
   Pow2Solver d_pow2Slv;
 
-  /** The ilog2 solver
-   *
-   * This is the subsolver responsible for running the procedure for
-   * constraints involving logs based on 2.
-   */
-  Ilog2Solver d_ilog2Slv;
+  ///** The ilog2 solver
+  // *
+  // * This is the subsolver responsible for running the procedure for
+  // * constraints involving logs based on 2.
+  // */
+  //Ilog2Solver d_ilog2Slv;
 
   /** The rfp.round solver
    *

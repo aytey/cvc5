@@ -493,6 +493,26 @@ RewriteResponse ArithRewriter::preRewriteTerm(TNode t)
       case Kind::POW2:
       case Kind::INTS_ISPOW2:
       case Kind::INTS_LOG2:
+      case Kind::RFP_TO_REAL:
+      case Kind::RFP_IS_NORMAL:
+      case Kind::RFP_IS_SUBNORMAL:
+      case Kind::RFP_IS_ZERO:
+      case Kind::RFP_IS_INF:
+      case Kind::RFP_IS_NAN:
+      case Kind::RFP_IS_NEG:
+      case Kind::RFP_IS_POS:
+      case Kind::RFP_TO_RFP_FROM_RFP:
+      case Kind::RFP_ROUND:
+      case Kind::RFP_ADD:
+      case Kind::RFP_SUB:
+      case Kind::RFP_NEG:
+      case Kind::RFP_MULT:
+      case Kind::RFP_DIV:
+      case Kind::RFP_EQ:
+      case Kind::RFP_GT:
+      case Kind::RFP_GEQ:
+      case Kind::IRM_TO_INT:
+      case Kind::IRM_TO_RM:
       case Kind::EXPONENTIAL:
       case Kind::SINE:
       case Kind::COSINE:
@@ -542,6 +562,27 @@ RewriteResponse ArithRewriter::postRewriteTerm(TNode t)
       case Kind::NONLINEAR_MULT: return postRewriteMult(t);
       case Kind::INTS_ISPOW2: return postRewriteIntsIsPow2(t);
       case Kind::INTS_LOG2: return postRewriteIntsLog2(t);
+      case Kind::FP_TO_RFP: return postRewriteFpToRfp(t);
+      case Kind::RFP_TO_REAL: return postRewriteRfpToReal(t);
+      case Kind::RFP_IS_NORMAL: return postRewriteRfpIsNormal(t);
+      case Kind::RFP_IS_SUBNORMAL: return postRewriteRfpIsSubnormal(t);
+      case Kind::RFP_IS_ZERO: return postRewriteRfpIsZero(t);
+      case Kind::RFP_IS_INF: return postRewriteRfpIsInf(t);
+      case Kind::RFP_IS_NAN: return postRewriteRfpIsNan(t);
+      case Kind::RFP_IS_NEG: return postRewriteRfpIsNeg(t);
+      case Kind::RFP_IS_POS: return postRewriteRfpIsPos(t);
+      case Kind::RFP_TO_RFP_FROM_RFP: return postRewriteRfpToRfpFromRfp(t);
+      case Kind::RFP_ROUND: return postRewriteRfpRound(t);
+      case Kind::RFP_ADD: return postRewriteRfpAdd(t);
+      case Kind::RFP_SUB: return postRewriteRfpSub(t);
+      case Kind::RFP_NEG: return postRewriteRfpNeg(t);
+      case Kind::RFP_MULT: return postRewriteRfpMult(t);
+      case Kind::RFP_DIV: return postRewriteRfpDiv(t);
+      case Kind::RFP_EQ: return postRewriteRfpEq(t);
+      case Kind::RFP_GT: return postRewriteRfpGt(t);
+      case Kind::RFP_GEQ: return postRewriteRfpGeq(t);
+      case Kind::IRM_TO_INT: return postRewriteIrm(t, true);
+      case Kind::IRM_TO_RM: return postRewriteIrm(t, false);
       case Kind::INTS_DIVISION:
       case Kind::INTS_MODULUS: return rewriteIntsDivMod(t);
       case Kind::INTS_DIVISION_TOTAL:
@@ -1318,6 +1359,72 @@ RewriteResponse ArithRewriter::postRewriteIntsLog2(TNode t)
     return RewriteResponse(REWRITE_DONE,
                            rewriter::mkConst(d_nm, Integer(length - 1)));
   }
+  return RewriteResponse(REWRITE_DONE, t);
+}
+
+RewriteResponse ArithRewriter::postRewriteIrm(TNode t, bool toInt)
+{
+  Trace("irm-rewrite") << "Rewrite " << t << " == ";
+  Assert(t.getKind() == Kind::IRM_TO_INT || t.getKind() == Kind::IRM_TO_RM);
+  NodeManager* nm = t.getNodeManager();
+  if (toInt && t[0].isConst())
+  {
+    Assert(t[0].getType().isRoundingMode());
+    RoundingMode rm = t[0].getConst<RoundingMode>();
+    Node ret;
+    if (rm == RoundingMode::ROUND_NEAREST_TIES_TO_EVEN)
+    {
+      ret = nm->mkConstInt(0);
+    }
+    else if (rm == RoundingMode::ROUND_NEAREST_TIES_TO_AWAY)
+    {
+      ret = nm->mkConstInt(1);
+    }
+    else if (rm == RoundingMode::ROUND_TOWARD_POSITIVE)
+    {
+      ret = nm->mkConstInt(2);
+    }
+    else if (rm == RoundingMode::ROUND_TOWARD_NEGATIVE)
+    {
+      ret = nm->mkConstInt(3);
+    }
+    else
+    {
+      Assert(rm == RoundingMode::ROUND_TOWARD_ZERO);
+      ret = nm->mkConstInt(4);
+    }
+    return RewriteResponse(REWRITE_DONE, ret);
+  }
+
+  if (!toInt && t[0].isConst())
+  {
+    Assert(t[0].getType().isInteger());
+    Integer i = t[0].getConst<Rational>().getNumerator();
+    Node ret;
+    if (i == 0)
+    {
+      ret = nm->mkConst(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+    }
+    else if (i == 1)
+    {
+      ret = nm->mkConst(RoundingMode::ROUND_NEAREST_TIES_TO_AWAY);
+    }
+    else if (i == 2)
+    {
+      ret = nm->mkConst(RoundingMode::ROUND_TOWARD_POSITIVE);
+    }
+    else if (i == 3)
+    {
+      ret = nm->mkConst(RoundingMode::ROUND_TOWARD_NEGATIVE);
+    }
+    else
+    {
+      Assert(i == 4);
+      ret = nm->mkConst(RoundingMode::ROUND_TOWARD_ZERO);
+    }
+    return RewriteResponse(REWRITE_DONE, ret);
+  }
+
   return RewriteResponse(REWRITE_DONE, t);
 }
 

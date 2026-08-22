@@ -57,7 +57,7 @@ bool RfpCompSolver::isTarget(const Node& n)
 
 Node mkRelConstr(Node node)
 {
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   Node lb = nm->mkNode(Kind::LEQ, nm->mkConstInt(Rational(0)), node);
   Node ub = nm->mkNode(Kind::LEQ, node, nm->mkConstInt(Rational(1)));
   return lb.andNode(ub);
@@ -86,7 +86,7 @@ Node mkGtSpecial(uint32_t eb, uint32_t sb, TNode node)
 void RfpCompSolver::checkInitialRefineGt(Node node) 
 {
   Trace("rfp-gt") << "RFP_GT term (init): " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpGt>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -209,7 +209,7 @@ void RfpCompSolver::checkInitialRefineGt(Node node)
 void RfpCompSolver::checkAuxRefineGt(Node node) 
 {
   Trace("rfp-gt") << "RFP_GT term (full): " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpGt>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -452,7 +452,7 @@ Node mkGeqSpecial(uint32_t eb, uint32_t sb, TNode node)
 void RfpCompSolver::checkInitialRefineGeq(Node node) 
 {
   Trace("rfp-geq") << "RFP_GEQ term: " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpGeq>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -500,7 +500,7 @@ void RfpCompSolver::checkInitialRefineGeq(Node node)
 void RfpCompSolver::checkAuxRefineGeq(Node node) 
 {
   Trace("rfp-geq") << "RFP_GEQ term: " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   FloatingPointSize sz = node.getOperator().getConst<RfpGeq>().getSize();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
@@ -697,7 +697,7 @@ void RfpCompSolver::checkAuxRefineGeq(Node node)
 void RfpCompSolver::checkFullRefineRelOp(const FloatingPointSize& sz, Node node) 
 {
   Trace("rfp-comp-solver") << "term: " << node << std::endl;
-  NodeManager* nm = NodeManager::currentNM();
+  NodeManager* nm = node.getNodeManager();
   uint32_t eb = sz.exponentWidth();
   uint32_t sb = sz.significandWidth();
 

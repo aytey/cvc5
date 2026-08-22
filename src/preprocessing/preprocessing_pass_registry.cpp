@@ -161,6 +161,7 @@ PreprocessingPassRegistry::PreprocessingPassRegistry()
   registerPassInfo("fun-def-fmf", callCtor<FunDefFmf>);
   registerPassInfo("static-rewrite", callCtor<StaticRewrite>);
   registerPassInfo("strings-eager-pp", callCtor<StringsEagerPp>);
+  registerPassInfo("fp-to-real", callCtor<FPToReal>);
   registerPassInfo("normalize", callCtor<Normalize>);
 }
 

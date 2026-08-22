@@ -485,3 +485,42 @@ name     = "ROUNDINGMODE_BITBLAST"
 children = 1
 comment  = "The bit-vector for a non-deterministic rounding mode"
 typerule = "::cvc5::internal::theory::fp::RoundingModeBitBlast"
+
+[[kinds]]
+type      = "constant"
+name      = "RFP_TO_FP_OP"
+class_key = "class"
+cpp_type  = "RfpToFP"
+hasher    = "::cvc5::internal::UnsignedHashFunction< ::cvc5::internal::RfpToFP >"
+header    = "util/real_floatingpoint.h"
+comment   = "operator for rfp.to_fp"
+typerule  = "SimpleTypeRule<RBuiltinOperator>"
+
+[[kinds]]
+type     = "parameterized"
+K1       = "RFP_TO_FP"
+K2       = "RFP_TO_FP_OP"
+children = 1
+comment  = "operator to convert RFP reals to floating-point values; first parameter is an RFP_TO_FP_OP, second is a real term"
+typerule = "::cvc5::internal::theory::fp::RfpToFPTypeRule"
+
+[[kinds]]
+type     = "operator"
+name     = "FP_TO_RFP"
+children = 1
+comment  = "convert floating-point values to RFP reals"
+typerule = "::cvc5::internal::theory::fp::FloatingPointToRealTypeRule"
+
+[[kinds]]
+type     = "operator"
+name     = "IRM_TO_INT"
+children = 1
+comment  = "convert rounding modes to integers"
+typerule = "SimpleTypeRule<RInteger, ARoundingMode>"
+
+[[kinds]]
+type     = "operator"
+name     = "IRM_TO_RM"
+children = 1
+comment  = "convert integers to rounding modes"
+typerule = "SimpleTypeRule<RRoundingMode, AInteger>"

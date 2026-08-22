@@ -603,22 +603,67 @@ enum ENUM(Kind)
    *   - TermManager::mkOp(Kind, const std::vector<uint32_t>&)
    */
   EVALUE(POW2),
+  ///**
+  // * 3-argument max for reals.
+  // */
+  //EVALUE(MAX3),
+  ///**
+  // * Integer log of base 2 for reals.
+  // */
+  //EVALUE(ILOG2),
   /**
-   * Log of base two.
-   *
-   * Operator for the inverse of raising ``2`` to a non-negative integer power.
-   *
-   * - Arity: ``1``
-   *
-   *   - ``1:`` Term of Sort Int
-   *
-   * - Create Term of this Kind with:
-   *
-   *   - TermManager::mkTerm(Kind, const std::vector<Term>&)
-   *   - TermManager::mkTerm(const Op&, const std::vector<Term>&)
-   *
+   * Convert rounding modes to integers.
    */
-  EVALUE(LOG2),
+  EVALUE(IRM_TO_INT),
+  /**
+   * Convert integers to rounding modes.
+   */
+  EVALUE(IRM_TO_RM),
+  /**
+   * Convert RFP reals to FloatingPoint values.
+   */
+  EVALUE(RFP_TO_FP),
+  /**
+   * Convert FloatingPoint values to RFP reals.
+   */
+  EVALUE(FP_TO_RFP),
+  /**
+   * Real version of fp.to_real.
+   */
+  EVALUE(RFP_TO_REAL),
+  /**
+   * Real version of fp.isNormal.
+   */
+  EVALUE(RFP_IS_NORMAL),
+  /**
+   * Real version of fp.isSubnormal.
+   */
+  EVALUE(RFP_IS_SUBNORMAL),
+  /**
+   * Real version of fp.isZero.
+   */
+  EVALUE(RFP_IS_ZERO),
+  /**
+   * Real version of fp.isInfinite.
+   */
+  EVALUE(RFP_IS_INF),
+  /**
+   * Real version of fp.isNaN.
+   */
+  EVALUE(RFP_IS_NAN),
+  /**
+   * Real version of fp.isNegative.
+   */
+  EVALUE(RFP_IS_NEG),
+  /**
+   * Real version of fp.isPositive.
+   */
+  EVALUE(RFP_IS_POS),
+  /**
+   * Real version of fp.to_fp operator.
+   */
+  EVALUE(RFP_TO_RFP_FROM_RFP),
+  EVALUE(RFP_ROUND),
   /**
    * Real version of fp.add.
    */
@@ -659,6 +704,22 @@ enum ENUM(Kind)
    * Real version of fp.geq.
    */
   EVALUE(RFP_GEQ),
+  /**
+   * Log of base two.
+   *
+   * Operator for the inverse of raising ``2`` to a non-negative integer power.
+   *
+   * - Arity: ``1``
+   *
+   *   - ``1:`` Term of Sort Int
+   *
+   * - Create Term of this Kind with:
+   *
+   *   - TermManager::mkTerm(Kind, const std::vector<Term>&)
+   *   - TermManager::mkTerm(const Op&, const std::vector<Term>&)
+   *
+   */
+  EVALUE(LOG2),
   /**
    * Arithmetic subtraction, left associative.
    *

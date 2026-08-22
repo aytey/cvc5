@@ -57,7 +57,12 @@ NonlinearExtension::NonlinearExtension(Env& env, TheoryArith& containing)
       d_icpSlv(d_env, d_im),
       d_iandSlv(env, d_im, d_model),
       d_piandSlv(env, d_im, d_model),
-      d_pow2Slv(env, d_im, d_model)
+      d_pow2Slv(env, d_im, d_model),
+      d_rfpRoundSlv(env, d_im, d_model, &d_extState),
+      d_rfpSlv(env, d_im, d_model),
+      d_rfpMultSlv(env, d_im, d_model),
+      d_rfpCompSlv(env, d_im, d_model),
+      d_rfpToRealSlv(env, d_im, d_model)
 {
   d_extTheory.addFunctionKind(Kind::NONLINEAR_MULT);
   d_extTheory.addFunctionKind(Kind::EXPONENTIAL);
@@ -66,6 +71,19 @@ NonlinearExtension::NonlinearExtension(Env& env, TheoryArith& containing)
   d_extTheory.addFunctionKind(Kind::IAND);
   d_extTheory.addFunctionKind(Kind::PIAND);
   d_extTheory.addFunctionKind(Kind::POW2);
+  d_extTheory.addFunctionKind(Kind::RFP_ROUND);
+  d_extTheory.addFunctionKind(Kind::RFP_TO_RFP_FROM_RFP);
+  d_extTheory.addFunctionKind(Kind::RFP_TO_REAL);
+  d_extTheory.addFunctionKind(Kind::RFP_ADD);
+  d_extTheory.addFunctionKind(Kind::RFP_SUB);
+  d_extTheory.addFunctionKind(Kind::RFP_NEG);
+  d_extTheory.addFunctionKind(Kind::RFP_MULT);
+  d_extTheory.addFunctionKind(Kind::RFP_DIV);
+  d_extTheory.addFunctionKind(Kind::RFP_EQ);
+  d_extTheory.addFunctionKind(Kind::RFP_LT);
+  d_extTheory.addFunctionKind(Kind::RFP_LEQ);
+  d_extTheory.addFunctionKind(Kind::RFP_GT);
+  d_extTheory.addFunctionKind(Kind::RFP_GEQ);
   d_true = nodeManager()->mkConst(true);
 }
 
@@ -602,70 +620,47 @@ void NonlinearExtension::runStrategy(const std::vector<Node>& assertions,
       case InferStep::POW2_INIT: d_pow2Slv.initLastCall(xts); break;
       case InferStep::POW2_FULL: d_pow2Slv.checkFullRefine(); break;
       case InferStep::POW2_INITIAL: d_pow2Slv.checkInitialRefine(); break;
-      case InferStep::ILOG2_INIT:
-        d_ilog2Slv.initLastCall(assertions, false_asserts, xts);
-        break;
-      case InferStep::ILOG2_FULL: d_ilog2Slv.checkFullRefine(); break;
-      case InferStep::ILOG2_INITIAL: d_ilog2Slv.checkInitialRefine(); break;
       case InferStep::RFP_ROUND_INIT:
         d_rfpRoundSlv.initLastCall(assertions, false_asserts, xts);
         break;
       case InferStep::RFP_ROUND_INITIAL:
         d_rfpRoundSlv.checkInitialRefine();
         break;
-      case InferStep::RFP_ROUND_AUX: 
-        d_rfpRoundSlv.checkAuxRefine(); 
-        break;
-      case InferStep::RFP_ROUND_FULL: 
-        d_rfpRoundSlv.checkFullRefine(); 
-        break;
+      case InferStep::RFP_ROUND_AUX: d_rfpRoundSlv.checkAuxRefine(); break;
+      case InferStep::RFP_ROUND_FULL: d_rfpRoundSlv.checkFullRefine(); break;
       case InferStep::RFP_INIT:
         d_rfpSlv.initLastCall(assertions, false_asserts, xts);
         break;
-      case InferStep::RFP_INITIAL:
-        d_rfpSlv.checkInitialRefine();
-        break;
-      case InferStep::RFP_AUX: 
-        d_rfpSlv.checkAuxRefine(); 
-        break;
-      case InferStep::RFP_FULL: 
-        d_rfpSlv.checkFullRefine(); 
-        break;
+      case InferStep::RFP_INITIAL: d_rfpSlv.checkInitialRefine(); break;
+      case InferStep::RFP_AUX: d_rfpSlv.checkAuxRefine(); break;
+      case InferStep::RFP_FULL: d_rfpSlv.checkFullRefine(); break;
       case InferStep::RFP_MULT_INIT:
         d_rfpMultSlv.initLastCall(assertions, false_asserts, xts);
         break;
       case InferStep::RFP_MULT_INITIAL:
         d_rfpMultSlv.checkInitialRefine();
         break;
-      case InferStep::RFP_MULT_AUX: 
-        d_rfpMultSlv.checkAuxRefine(); 
-        break;
-      case InferStep::RFP_MULT_FULL: 
-        d_rfpMultSlv.checkFullRefine(); 
-        break;
+      case InferStep::RFP_MULT_AUX: d_rfpMultSlv.checkAuxRefine(); break;
+      case InferStep::RFP_MULT_FULL: d_rfpMultSlv.checkFullRefine(); break;
       case InferStep::RFP_COMP_INIT:
         d_rfpCompSlv.initLastCall(assertions, false_asserts, xts);
         break;
       case InferStep::RFP_COMP_INITIAL:
         d_rfpCompSlv.checkInitialRefine();
         break;
-      case InferStep::RFP_COMP_AUX: 
-        d_rfpCompSlv.checkAuxRefine(); 
-        break;
-      case InferStep::RFP_COMP_FULL: 
-        d_rfpCompSlv.checkFullRefine(); 
-        break;
+      case InferStep::RFP_COMP_AUX: d_rfpCompSlv.checkAuxRefine(); break;
+      case InferStep::RFP_COMP_FULL: d_rfpCompSlv.checkFullRefine(); break;
       case InferStep::RFP_TO_REAL_INIT:
         d_rfpToRealSlv.initLastCall(assertions, false_asserts, xts);
         break;
       case InferStep::RFP_TO_REAL_INITIAL:
         d_rfpToRealSlv.checkInitialRefine();
         break;
-      case InferStep::RFP_TO_REAL_AUX: 
-        d_rfpToRealSlv.checkAuxRefine(); 
+      case InferStep::RFP_TO_REAL_AUX:
+        d_rfpToRealSlv.checkAuxRefine();
         break;
-      case InferStep::RFP_TO_REAL_FULL: 
-        d_rfpToRealSlv.checkFullRefine(); 
+      case InferStep::RFP_TO_REAL_FULL:
+        d_rfpToRealSlv.checkFullRefine();
         break;
       case InferStep::ICP:
         d_icpSlv.reset(assertions);

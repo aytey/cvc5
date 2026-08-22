@@ -120,6 +120,54 @@ class ArithRewriter : public TheoryRewriter
   RewriteResponse postRewriteIntsIsPow2(TNode t);
   /** postRewrite INTS_LOG2 */
   RewriteResponse postRewriteIntsLog2(TNode t);
+  ///** postRewrite MAX3 */
+  //static RewriteResponse postRewriteMax3(TNode t);
+  /** postRewrite IRM */
+  static RewriteResponse postRewriteIrm(TNode t, bool to_int);
+  ///** postRewrite RFP_TO_FP */
+  //static RewriteResponse postRewriteRfpToFP(TNode t);
+  /** postRewrite FP_TO_RFP */
+  static RewriteResponse postRewriteFpToRfp(TNode t);
+  /** postRewrite RFP_TO_REAL */
+  static RewriteResponse postRewriteRfpToReal(TNode t);
+  /** postRewrite RFP_IS_NORMAL */
+  static RewriteResponse postRewriteRfpIsNormal(TNode t);
+  /** postRewrite RFP_IS_SUBNORMAL */
+  static RewriteResponse postRewriteRfpIsSubnormal(TNode t);
+  /** postRewrite RFP_IS_ZERO */
+  static RewriteResponse postRewriteRfpIsZero(TNode t);
+  /** postRewrite RFP_IS_INF*/
+  static RewriteResponse postRewriteRfpIsInf(TNode t);
+  /** postRewrite RFP_IS_NAN */
+  static RewriteResponse postRewriteRfpIsNan(TNode t);
+  /** postRewrite RFP_IS_NEG*/
+  static RewriteResponse postRewriteRfpIsNeg(TNode t);
+  /** postRewrite RFP_IS_POS*/
+  static RewriteResponse postRewriteRfpIsPos(TNode t);
+  /** postRewrite RFP_TO_RFP_FROM_RFP */
+  static RewriteResponse postRewriteRfpToRfpFromRfp(TNode t);
+  /** postRewrite RFP_ROUND */
+  static RewriteResponse postRewriteRfpRound(TNode t);
+  /** postRewrite RFP_ADD */
+  static RewriteResponse postRewriteRfpAdd(TNode t);
+  /** postRewrite RFP_SUB */
+  static RewriteResponse postRewriteRfpSub(TNode t);
+  /** postRewrite RFP_NEG */
+  static RewriteResponse postRewriteRfpNeg(TNode t);
+  /** postRewrite RFP_MULT */
+  static RewriteResponse postRewriteRfpMult(TNode t);
+  /** postRewrite RFP_DIV */
+  static RewriteResponse postRewriteRfpDiv(TNode t);
+  /** postRewrite RFP_EQ */
+  static RewriteResponse postRewriteRfpEq(TNode t);
+  ///** postRewrite RFP_LT */
+  //static RewriteResponse postRewriteRfpLt(TNode t);
+  ///** postRewrite RFP_LEQ */
+  //static RewriteResponse postRewriteRfpLeq(TNode t);
+  /** postRewrite RFP_GT */
+  static RewriteResponse postRewriteRfpGt(TNode t);
+  /** postRewrite RFP_GEQ */
+  static RewriteResponse postRewriteRfpGeq(TNode t);
 
   /** postRewrite transcendental functions */
   RewriteResponse postRewriteTranscendental(TNode t);

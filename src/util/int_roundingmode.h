@@ -50,6 +50,7 @@ struct IntRoundingMode
       return 4;
 
     Unreachable();
+    return NE;
   }
 };
 
